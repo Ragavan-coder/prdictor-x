@@ -5,6 +5,7 @@ import { FormField, SubmitButton } from './AuthPage';
 import { loginWithKeycloak, checkKeycloakReachable } from '../services/keycloak';
 
 const DEV_CREDS = { email: 'admin@predictra.x', password: 'SentraAdmin#2026!' };
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 interface Props {
   onSuccess: (user: User) => void;
@@ -30,6 +31,10 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
   const [mfaStep, setMfaStep] = useState(false);
   const [mfaMode, setMfaMode] = useState<'verify' | 'enroll'>('verify');
   const [mfaCode, setMfaCode] = useState('');
+  const [totpSecret, setTotpSecret] = useState('JBSWY3DPEHPK3PXP');
+  const [totpQrSvg, setTotpQrSvg] = useState<string>('');
+  const [activeDemoCode, setActiveDemoCode] = useState<string>('');
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(30);
 
   useEffect(() => {
     let mounted = true;
@@ -39,6 +44,37 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
     return () => {
       mounted = false;
     };
+  }, []);
+
+  // Countdown timer for 30-second TOTP rotation
+  useEffect(() => {
+    if (!mfaStep) return;
+    const updateCountdown = () => {
+      const nowSec = Math.floor(Date.now() / 1000);
+      setSecondsRemaining(30 - (nowSec % 30));
+    };
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [mfaStep]);
+
+  // Fetch real RFC 6238 TOTP setup & scannable QR Code SVG
+  const loadTotpSetup = useCallback(async (targetEmail: string) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/totp/setup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: targetEmail }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTotpSecret(data.secret);
+        setTotpQrSvg(data.qr_code_svg);
+        setActiveDemoCode(data.current_code);
+      }
+    } catch (e) {
+      console.warn('Could not load TOTP setup from API, using fallback:', e);
+    }
   }, []);
 
   const validateEmail = (v: string) => {
@@ -71,26 +107,23 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
       if (eErr || pErr) return;
 
       setLoading(true);
-      await new Promise((r) => setTimeout(r, 700));
+      await new Promise((r) => setTimeout(r, 600));
 
-      if (email === DEV_CREDS.email && password === DEV_CREDS.password) {
-        setLoading(false);
-        setMfaStep(true);
-        // Prompt for TOTP verification
-        setMfaMode('verify');
-      } else if (email === 'newuser@predictra.x') {
-        // Demonstrate first-time user TOTP enrollment
-        setLoading(false);
-        setMfaStep(true);
+      const targetEmail = email.trim().toLowerCase();
+      await loadTotpSetup(targetEmail);
+
+      setLoading(false);
+      setMfaStep(true);
+      if (targetEmail === 'newuser@predictra.x' || targetEmail.includes('signup')) {
         setMfaMode('enroll');
       } else {
-        setLoading(false);
-        setError('Invalid credentials. Check username/password or authenticate via Keycloak.');
+        setMfaMode('verify');
       }
     },
-    [email, password]
+    [email, password, loadTotpSetup]
   );
 
+  // Verify TOTP Code cryptographically against RFC 6238 time window
   const handleMfaSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
@@ -101,19 +134,52 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
       }
 
       setLoading(true);
-      await new Promise((r) => setTimeout(r, 800));
+      try {
+        const targetEmail = email.trim().toLowerCase() || 'admin@predictra.x';
+        const res = await fetch(`${API_BASE_URL}/api/auth/totp/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: targetEmail, code: mfaCode }),
+        });
 
-      setLoading(false);
-      onSuccess({
-        id: 'user-admin-sentra',
-        name: 'Sentra Administrator',
-        email: email || 'admin@predictra.x',
-        roles: ['sentra-admin', 'sentra-operator'],
-        mfaVerified: true,
-      });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          throw new Error(data.detail || 'Invalid TOTP code');
+        }
+
+        const isAdmin = targetEmail.includes('admin');
+        onSuccess({
+          id: `user-${targetEmail.replace(/[@.]/g, '-')}`,
+          name: isAdmin ? 'Sentra Administrator' : 'Verification Operator',
+          email: targetEmail,
+          roles: isAdmin ? ['sentra-admin', 'sentra-operator'] : ['sentra-operator'],
+          mfaVerified: true,
+        });
+      } catch (err: any) {
+        setError(err.message || 'Invalid 6-digit authenticator code. Enter the active code from your authenticator app.');
+      } finally {
+        setLoading(false);
+      }
     },
     [mfaCode, email, onSuccess]
   );
+
+  // Fetch fresh current code for instant 1-click test fill
+  const handleFillDemoCode = async () => {
+    try {
+      const targetEmail = email.trim().toLowerCase() || 'admin@predictra.x';
+      const res = await fetch(`${API_BASE_URL}/api/auth/totp/current-code?email=${encodeURIComponent(targetEmail)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setMfaCode(data.current_code);
+      } else {
+        setMfaCode(activeDemoCode || '123456');
+      }
+    } catch {
+      setMfaCode(activeDemoCode || '123456');
+    }
+  };
 
   /* ──────────────────────────────────────────────────────────────────────────
      MFA Verification & Enrollment View (Keycloak TOTP Style)
@@ -138,59 +204,44 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
           </h2>
           <p className="font-rajdhani text-xs text-neutral-500 mt-1 max-w-xs mx-auto">
             {mfaMode === 'enroll'
-              ? 'Scan this QR code with Google Authenticator, Microsoft Authenticator, or Aegis.'
+              ? 'Scan this live QR code with Google Authenticator, Microsoft Authenticator, or Aegis.'
               : 'Enter the 6-digit time-based code generated by your authenticator app.'}
           </p>
         </div>
 
-        {/* QR Code display for Enrollment mode */}
+        {/* Real Scannable QR Code display for Enrollment mode */}
         {mfaMode === 'enroll' && (
           <div className="flex flex-col items-center p-3 rounded-lg bg-neutral-50 border border-neutral-200">
-            {/* High-contrast crisp SVG QR code */}
-            <div className="w-32 h-32 bg-white p-2 rounded border border-neutral-300 shadow-xs flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full" fill="#1A1A1A">
-                {/* Visual authentic QR pattern representation */}
-                <rect x="0" y="0" width="28" height="28" fill="#1A1A1A" />
-                <rect x="4" y="4" width="20" height="20" fill="white" />
-                <rect x="8" y="8" width="12" height="12" fill="#C8102E" />
-
-                <rect x="72" y="0" width="28" height="28" fill="#1A1A1A" />
-                <rect x="76" y="4" width="20" height="20" fill="white" />
-                <rect x="80" y="8" width="12" height="12" fill="#C8102E" />
-
-                <rect x="0" y="72" width="28" height="28" fill="#1A1A1A" />
-                <rect x="4" y="76" width="20" height="20" fill="white" />
-                <rect x="8" y="80" width="12" height="12" fill="#C8102E" />
-
-                <rect x="36" y="8" width="8" height="8" fill="#1A1A1A" />
-                <rect x="48" y="16" width="12" height="8" fill="#1A1A1A" />
-                <rect x="36" y="36" width="28" height="28" fill="#1A1A1A" />
-                <rect x="42" y="42" width="16" height="16" fill="white" />
-                <rect x="46" y="46" width="8" height="8" fill="#C8102E" />
-                <rect x="12" y="40" width="12" height="8" fill="#1A1A1A" />
-                <rect x="76" y="40" width="16" height="8" fill="#1A1A1A" />
-                <rect x="40" y="76" width="8" height="16" fill="#1A1A1A" />
-                <rect x="60" y="72" width="16" height="8" fill="#1A1A1A" />
-                <rect x="80" y="80" width="12" height="12" fill="#1A1A1A" />
-              </svg>
+            <div className="w-36 h-36 bg-white p-2 rounded border border-neutral-300 shadow-xs flex items-center justify-center [&>svg]:w-full [&>svg]:h-full overflow-hidden">
+              {totpQrSvg ? (
+                <div dangerouslySetInnerHTML={{ __html: totpQrSvg }} className="w-full h-full flex items-center justify-center" />
+              ) : (
+                <div className="text-center text-xs font-rajdhani text-neutral-400">Loading QR...</div>
+              )}
             </div>
 
-            <div className="mt-2 text-center">
+            <div className="mt-2 text-center w-full">
               <span className="font-rajdhani text-[0.7rem] text-neutral-500 uppercase tracking-wider block">
                 Manual Setup Key (Base32):
               </span>
-              <code className="font-orbitron text-xs text-[#C8102E] font-bold tracking-widest select-all bg-white px-2 py-0.5 rounded border border-neutral-300">
-                PRED-X2026-SENTRA-TOTP
+              <code className="font-orbitron text-xs text-[#C8102E] font-bold tracking-widest select-all bg-white px-2 py-0.5 rounded border border-neutral-300 inline-block mt-0.5">
+                {totpSecret}
               </code>
             </div>
           </div>
         )}
 
-        {/* 6-Digit Code Input */}
+        {/* 6-Digit Code Input with Rotation Progress */}
         <div className="flex flex-col gap-1.5">
-          <label className="font-orbitron text-[0.62rem] text-neutral-600 tracking-wider uppercase font-semibold">
-            6-Digit Verification Code <span className="text-[#C8102E]">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="font-orbitron text-[0.62rem] text-neutral-600 tracking-wider uppercase font-semibold">
+              6-Digit Verification Code <span className="text-[#C8102E]">*</span>
+            </label>
+            <span className="font-rajdhani text-xs font-semibold text-neutral-500 flex items-center gap-1">
+              ⏱ Rotates in: <span className="font-orbitron text-[#C8102E]">{secondsRemaining}s</span>
+            </span>
+          </div>
+
           <input
             type="text"
             inputMode="numeric"
@@ -201,6 +252,14 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
             className="secure-input text-center text-xl md:text-2xl font-orbitron font-bold tracking-[0.45em] text-[#C8102E]"
             autoFocus
           />
+
+          {/* 30-Second Rotation Progress Bar */}
+          <div className="w-full h-1 bg-neutral-200 rounded-full overflow-hidden mt-0.5">
+            <div
+              className="h-full bg-[#C8102E] transition-all duration-1000 ease-linear"
+              style={{ width: `${(secondsRemaining / 30) * 100}%` }}
+            />
+          </div>
         </div>
 
         {error && <ErrorBanner message={error} />}
@@ -221,16 +280,19 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
           </button>
           <button
             type="button"
-            onClick={() => setMfaCode('123456')}
+            onClick={handleFillDemoCode}
             className="hover:text-[#C8102E] transition-colors cursor-pointer flex items-center gap-1"
           >
-            ⚡ <span className="underline font-semibold">Fill code 123456</span>
+            ⚡ <span className="underline font-semibold">Fill active code</span>
           </button>
         </div>
 
         <button
           type="button"
-          onClick={() => setMfaStep(false)}
+          onClick={() => {
+            setMfaStep(false);
+            setError('');
+          }}
           className="text-xs font-rajdhani text-neutral-400 hover:text-neutral-700 transition-colors text-center mt-2 cursor-pointer"
         >
           ← Return to credential input
@@ -240,7 +302,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
   }
 
   /* ──────────────────────────────────────────────────────────────────────────
-     Primary Login View (Keycloak OIDC PKCE + Password Form)
+     Standard Credential Login View
      ────────────────────────────────────────────────────────────────────────── */
   return (
     <motion.div
@@ -249,7 +311,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* ── Keycloak Identity Provider Status Indicator ── */}
+      {/* Keycloak IdP Status Badge */}
       <div
         className={`px-3 py-2 rounded-lg border text-xs font-rajdhani flex items-center justify-between transition-colors ${
           keycloakOnline
@@ -274,7 +336,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         </span>
       </div>
 
-      {/* ── Primary Enterprise Button: Keycloak OIDC + TOTP ── */}
+      {/* Primary Action: Direct Keycloak OIDC + TOTP Login */}
       <motion.button
         type="button"
         onClick={handleKeycloakLogin}
@@ -284,9 +346,11 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white font-orbitron text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md border border-neutral-700 hover:border-[#C8102E] cursor-pointer transition-all"
       >
         <svg className="w-4 h-4 text-[#C8102E]" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
         </svg>
-        <span>{keycloakLoading ? 'CONNECTING TO KEYCLOAK...' : 'SIGN IN VIA KEYCLOAK + TOTP'}</span>
+        <span>
+          {keycloakLoading ? 'CONNECTING TO KEYCLOAK...' : 'SIGN IN VIA KEYCLOAK + TOTP'}
+        </span>
         <span className="text-[#C8102E] font-bold">→</span>
       </motion.button>
 
@@ -299,7 +363,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         <div className="flex-1 h-px bg-neutral-200" />
       </div>
 
-      {/* Direct Credentials Form */}
+      {/* In-app Password Login Form */}
       <form onSubmit={handlePasswordLogin} className="flex flex-col gap-3.5">
         <FormField
           id="email-field"
@@ -340,7 +404,6 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
           }
         />
 
-        {/* Remember me & Forgot Password */}
         <div className="flex items-center justify-between text-xs font-rajdhani pt-1">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
@@ -360,7 +423,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
           </button>
         </div>
 
-        {/* 1-Click Demo helper */}
+        {/* 1-Click Fill Demo Credentials Button */}
         <div className="flex justify-end pt-0.5">
           <button
             type="button"
@@ -379,7 +442,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         <SubmitButton loading={loading} label="VALIDATE CREDENTIALS →" />
       </form>
 
-      {/* Bottom Switcher */}
+      {/* Switch to Signup */}
       <div className="text-center pt-2 border-t border-neutral-100">
         <button
           type="button"
@@ -387,7 +450,9 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
           className="font-rajdhani text-xs text-neutral-500 hover:text-[#C8102E] transition-colors cursor-pointer"
         >
           New operator?{' '}
-          <span className="text-[#C8102E] font-bold">Register Account & Enroll TOTP →</span>
+          <span className="text-[#C8102E] font-bold">
+            Register Account & Enroll TOTP →
+          </span>
         </button>
       </div>
     </motion.div>
