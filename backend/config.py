@@ -9,6 +9,8 @@ class Settings:
     KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL", "http://localhost:8080").rstrip("/")
     KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM", "predictra-x")
     KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID", "predictra-x-frontend")
+    KEYCLOAK_ADMIN: str = os.getenv("KEYCLOAK_ADMIN", "admin")
+    KEYCLOAK_ADMIN_PASSWORD: str = os.getenv("KEYCLOAK_ADMIN_PASSWORD", "SentraAdmin#2026!")
     
     # CORS: Explicitly allowed origins
     CORS_ORIGINS_RAW: str = os.getenv(
