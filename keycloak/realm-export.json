@@ -1,0 +1,233 @@
+{
+  "id": "predictra-x",
+  "realm": "predictra-x",
+  "displayName": "PREDICTRA-X Security Portal",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>PREDICTRA-</span><span style=\"color:#C8102E;font-weight:900;\">X</span> | SENTRA CORE</div>",
+  "notBefore": 0,
+  "defaultSignatureAlgorithm": "RS256",
+  "revokeRefreshToken": false,
+  "refreshTokenMaxReuse": 0,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "ssoSessionIdleTimeoutRememberMe": 0,
+  "ssoSessionMaxLifespanRememberMe": 0,
+  "offlineSessionIdleTimeout": 2592000,
+  "offlineSessionMaxLifespanEnabled": false,
+  "offlineSessionMaxLifespan": 5184000,
+  "clientSessionIdleTimeout": 0,
+  "clientSessionMaxLifespan": 0,
+  "clientOfflineSessionIdleTimeout": 0,
+  "clientOfflineSessionMaxLifespan": 0,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyInitialCounter": 0,
+  "otpPolicyDigits": 6,
+  "otpPolicyLookAheadWindow": 1,
+  "otpPolicyPeriod": 30,
+  "otpPolicyCodeReusable": false,
+  "otpSupportedApplications": [
+    "FreeOTP",
+    "Google Authenticator",
+    "Microsoft Authenticator",
+    "Aegis",
+    "1Password"
+  ],
+  "requiredActions": [
+    {
+      "alias": "CONFIGURE_TOTP",
+      "name": "Configure OTP",
+      "providerId": "CONFIGURE_TOTP",
+      "enabled": true,
+      "defaultAction": true,
+      "priority": 10,
+      "config": {}
+    },
+    {
+      "alias": "UPDATE_PASSWORD",
+      "name": "Update Password",
+      "providerId": "UPDATE_PASSWORD",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 30,
+      "config": {}
+    },
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 50,
+      "config": {}
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "id": "role-sentra-admin",
+        "name": "sentra-admin",
+        "description": "Full administrator of PREDICTRA-X verification core and audit trails",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "id": "role-sentra-operator",
+        "name": "sentra-operator",
+        "description": "Standard operator with FDR verification analysis access",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "id": "role-sentra-auditor",
+        "name": "sentra-auditor",
+        "description": "Read-only access to SHA-256 audit logs and compliance reports",
+        "composite": false,
+        "clientRole": false
+      }
+    ]
+  },
+  "defaultRoles": [
+    "sentra-operator"
+  ],
+  "clients": [
+    {
+      "id": "client-predictra-frontend",
+      "clientId": "predictra-x-frontend",
+      "name": "PREDICTRA-X Security Portal Frontend",
+      "description": "Public OIDC Client for PREDICTRA-X React Frontend with PKCE S256",
+      "rootUrl": "http://localhost:5173",
+      "adminUrl": "http://localhost:5173",
+      "baseUrl": "http://localhost:5173/",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "http://localhost:5173/",
+        "http://127.0.0.1:5173/*",
+        "http://127.0.0.1:5173/"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "+"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1730000000",
+        "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "http://localhost:5173/*##http://localhost:5173/##http://127.0.0.1:5173/*",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "user-admin-sentra",
+      "username": "admin@predictra.x",
+      "email": "admin@predictra.x",
+      "firstName": "Sentra",
+      "lastName": "Administrator",
+      "enabled": true,
+      "emailVerified": true,
+      "createdTimestamp": 1730000000000,
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "Initial Password",
+          "createdDate": 1730000000000,
+          "secretData": "{\"value\":\"+y1VzJqI75Ufx9u2M3l6gqWnFw8=\",\"salt\":\"4w2T9q1a4z6m8k0x==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}",
+          "value": "SentraAdmin#2026!"
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [
+        "CONFIGURE_TOTP"
+      ],
+      "realmRoles": [
+        "sentra-admin",
+        "sentra-operator"
+      ],
+      "clientRoles": {}
+    },
+    {
+      "id": "user-operator-sentra",
+      "username": "operator@predictra.x",
+      "email": "operator@predictra.x",
+      "firstName": "Verification",
+      "lastName": "Operator",
+      "enabled": true,
+      "emailVerified": true,
+      "createdTimestamp": 1730000000000,
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "Initial Password",
+          "createdDate": 1730000000000,
+          "value": "SentraOp#2026!"
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [
+        "CONFIGURE_TOTP"
+      ],
+      "realmRoles": [
+        "sentra-operator"
+      ],
+      "clientRoles": {}
+    }
+  ]
+}

@@ -1,0 +1,353 @@
+@import "tailwindcss";
+
+/* ============================================
+   DESIGN TOKENS — matches video palette
+   White bg · Charcoal text · Crimson accent
+   ============================================ */
+:root {
+  --crimson:        #C8102E;
+  --crimson-dark:   #8B0000;
+  --crimson-mid:    #DC143C;
+  --crimson-light:  #E8394F;
+  --crimson-pale:   rgba(200, 16, 46, 0.08);
+  --crimson-border: rgba(200, 16, 46, 0.25);
+
+  --charcoal:       #1A1A1A;
+  --charcoal-mid:   #2D2D2D;
+  --charcoal-light: #444444;
+  --grey-dark:      #666666;
+  --grey-mid:       #999999;
+  --grey-light:     #CCCCCC;
+  --grey-pale:      #E8E8E8;
+  --grey-faint:     #F2F2F2;
+
+  --white:          #FFFFFF;
+  --off-white:      #FAFAFA;
+  --pearl:          #F5F5F5;
+
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-xl:  0 16px 48px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08);
+
+  --shadow-red: 0 4px 20px rgba(200,16,46,0.20), 0 1px 4px rgba(200,16,46,0.10);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--white);
+  font-family: 'Inter', sans-serif;
+  color: var(--charcoal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--grey-faint); }
+::-webkit-scrollbar-thumb { background: var(--grey-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes ring-rotate-cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes ring-rotate-ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+@keyframes particle-twinkle {
+  0%, 100% { opacity: 0.05; transform: scale(1); }
+  50%       { opacity: 0.5;  transform: scale(1.6); }
+}
+
+@keyframes metallic-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes shimmer-slide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%);  }
+}
+
+@keyframes progress-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(200,16,46,0.4); }
+  50%       { box-shadow: 0 0 14px rgba(200,16,46,0.7); }
+}
+
+@keyframes float-up {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes shield-breathe {
+  0%, 100% { filter: drop-shadow(0 4px 16px rgba(200,16,46,0.35)) drop-shadow(0 0 32px rgba(200,16,46,0.15)); }
+  50%       { filter: drop-shadow(0 6px 24px rgba(200,16,46,0.55)) drop-shadow(0 0 48px rgba(200,16,46,0.25)); }
+}
+
+@keyframes layer-slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes border-chase {
+  0%   { background-position: 0%   0%; }
+  100% { background-position: 300% 0%; }
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITIES
+   ============================================ */
+.font-orbitron  { font-family: 'Orbitron',  monospace; }
+.font-rajdhani  { font-family: 'Rajdhani',  sans-serif; }
+.font-inter     { font-family: 'Inter',     sans-serif; }
+
+/* Crimson metallic — for logo/headings */
+.crimson-text {
+  background: linear-gradient(135deg,
+    #8B0000 0%, #C8102E 30%, #E8394F 55%, #C8102E 75%, #8B0000 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: metallic-shimmer 4s linear infinite;
+}
+
+/* Dark metallic — for PREDICTRA- prefix */
+.dark-metallic-text {
+  background: linear-gradient(135deg,
+    #1A1A1A 0%, #444 25%, #1A1A1A 50%, #333 75%, #1A1A1A 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: metallic-shimmer 5s linear infinite;
+}
+
+/* ============================================
+   CARD / PANEL
+   ============================================ */
+.card {
+  background: var(--white);
+  border: 1px solid var(--grey-pale);
+  box-shadow: var(--shadow-lg);
+  border-radius: 16px;
+}
+
+.card-top-bar {
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%, var(--crimson-dark) 20%, var(--crimson) 50%, var(--crimson-dark) 80%, transparent 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+/* ============================================
+   SECURE INPUTS (light theme)
+   ============================================ */
+.secure-input {
+  width: 100%;
+  background: var(--off-white);
+  border: 1.5px solid var(--grey-pale);
+  border-radius: 8px;
+  color: var(--charcoal);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  outline: none;
+}
+
+.secure-input:hover {
+  border-color: var(--grey-light);
+  background: var(--white);
+}
+
+.secure-input:focus {
+  border-color: var(--crimson);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.10);
+}
+
+.secure-input::placeholder {
+  color: var(--grey-mid);
+}
+
+.secure-input:-webkit-autofill,
+.secure-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--charcoal);
+  -webkit-box-shadow: 0 0 0px 1000px var(--white) inset;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-primary {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, var(--crimson-dark) 0%, var(--crimson) 50%, var(--crimson-dark) 100%);
+  background-size: 200% auto;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background-position 0.4s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  box-shadow: var(--shadow-red);
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.btn-primary:hover {
+  background-position: right center;
+  box-shadow: 0 6px 24px rgba(200,16,46,0.35), 0 2px 8px rgba(200,16,46,0.2);
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover::after { transform: translateX(400%); }
+.btn-primary:active { transform: translateY(0); box-shadow: var(--shadow-red); }
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   STATUS / BADGES
+   ============================================ */
+.mfa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(200,16,46,0.07);
+  border: 1px solid rgba(200,16,46,0.2);
+  color: var(--crimson);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 100px;
+  animation: badge-pulse 3s ease-in-out infinite;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   RING DECORATORS
+   ============================================ */
+.ring-cw  { animation: ring-rotate-cw  var(--dur, 10s) linear infinite; }
+.ring-ccw { animation: ring-rotate-ccw var(--dur, 14s) linear infinite; }
+
+/* ============================================
+   INTRO SPECIFIC
+   ============================================ */
+.intro-bg {
+  background: linear-gradient(160deg,
+    #FAFAFA 0%,
+    #F2F2F2 35%,
+    #EEEEEE 60%,
+    #F5F5F5 100%);
+}
+
+/* Subtle dot grid (matches video bg texture) */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ============================================
+   AUTH PAGE BACKGROUND
+   ============================================ */
+.auth-bg {
+  background: linear-gradient(150deg,
+    #FFFFFF 0%,
+    #F8F8F8 40%,
+    #F2F2F2 70%,
+    #FAFAFA 100%);
+}
+
+/* ============================================
+   LAYER ITEM (intro + dashboard)
+   ============================================ */
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.4s ease;
+}
+
+.layer-item.active {
+  background: rgba(200,16,46,0.05);
+  border-color: rgba(200,16,46,0.18);
+}
+
+/* ============================================
+   DASHBOARD STAT CARD
+   ============================================ */
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--grey-pale);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   TOP NAV
+   ============================================ */
+.top-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--grey-pale);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
