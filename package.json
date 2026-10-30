@@ -1,0 +1,12 @@
+{
+  "name": "predictra-x-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Predictra-X Sentinel Security Platform",
+  "scripts": {
+    "dev": "npm --prefix predictra-app run dev",
+    "build": "npm --prefix predictra-app run build",
+    "preview": "npm --prefix predictra-app run preview",
+    "test:step8": "python test_step8.py"
+  }
+}
