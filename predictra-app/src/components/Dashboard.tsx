@@ -3,12 +3,14 @@ import { motion } from 'framer-motion';
 import type { User } from '../App';
 import SecurityBackground from './SecurityBackground';
 import SecurityAlertCenter from './SecurityAlertCenter';
+import LiveTelemetryStream from './LiveTelemetryStream';
 import {
   fetchFDRStats,
   fetchFDRRecords,
   fetchAuditTrail,
   executeFDRVerification,
   executeFDROverride,
+  downloadAuditPdf,
   type FDRRecord,
   type FDRStats,
   type AuditTrailResponse,
@@ -25,9 +27,10 @@ export default function Dashboard({ user, onLogout }: Props) {
   const [auditTrail, setAuditTrail] = useState<AuditTrailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionMsg, setActionMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-  const [activeTab, setActiveTab] = useState<'records' | 'audit' | 'security'>('records');
+  const [activeTab, setActiveTab] = useState<'records' | 'telemetry' | 'audit' | 'security'>('records');
   const [alertCenterOpen, setAlertCenterOpen] = useState(false);
   const [unreadAlerts, setUnreadAlerts] = useState<number>(0);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   const isAdmin = user.roles?.includes('sentra-admin') || false;
 
@@ -100,6 +103,21 @@ export default function Dashboard({ user, onLogout }: Props) {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Override failed';
       setActionMsg({ text: message, type: 'error' });
+    }
+  };
+
+  const handleExportPdf = async () => {
+    setExportingPdf(true);
+    try {
+      await downloadAuditPdf();
+      setActionMsg({ text: 'Cryptographic Audit Certificate PDF generated and downloaded.', type: 'success' });
+      setTimeout(() => setActionMsg(null), 5000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to download audit certificate';
+      setActionMsg({ text: message, type: 'error' });
+      setTimeout(() => setActionMsg(null), 5000);
+    } finally {
+      setExportingPdf(false);
     }
   };
 
@@ -339,23 +357,30 @@ export default function Dashboard({ user, onLogout }: Props) {
           </div>
 
           {/* Dashboard Tab Navigation */}
-          <div className="flex border-b border-neutral-200 mb-4 bg-white rounded-t-xl px-4 pt-2">
+          <div className="flex border-b border-neutral-200 mb-4 bg-white rounded-t-xl px-4 pt-2 overflow-x-auto">
             {[
               { id: 'records', label: 'ACTIVE FDR RECORDS' },
+              { id: 'telemetry', label: 'LIVE TELEMETRY STREAM', badge: 'WEBSOCKET' },
               { id: 'audit', label: 'SHA-256 AUDIT LOG CHAIN' },
               { id: 'security', label: 'KEYCLOAK & OIDC CLAIMS' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className="py-3 px-4 font-orbitron text-xs font-bold tracking-wider uppercase cursor-pointer transition-colors"
+                className="py-3 px-4 font-orbitron text-xs font-bold tracking-wider uppercase cursor-pointer transition-colors flex items-center gap-2 whitespace-nowrap"
                 style={{
                   color: activeTab === tab.id ? '#C8102E' : '#737373',
                   borderBottom: activeTab === tab.id ? '2.5px solid #C8102E' : '2.5px solid transparent',
                   marginBottom: '-1px',
                 }}
               >
-                {tab.label}
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[0.55rem] font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -410,10 +435,13 @@ export default function Dashboard({ user, onLogout }: Props) {
             </div>
           )}
 
-          {/* Tab 2: SHA-256 Audit Log Chain */}
+          {/* Tab 2: Live WebSocket Telemetry Stream */}
+          {activeTab === 'telemetry' && <LiveTelemetryStream />}
+
+          {/* Tab 3: SHA-256 Audit Log Chain */}
           {activeTab === 'audit' && (
             <div className="bg-white rounded-b-xl border border-neutral-200 p-5 shadow-xs font-rajdhani">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-neutral-200">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-neutral-200">
                 <div>
                   <h3 className="font-orbitron font-bold text-xs uppercase tracking-wider text-neutral-900">
                     Cryptographic Audit Chain (SHA-256 Merkle Chain)
@@ -422,9 +450,31 @@ export default function Dashboard({ user, onLogout }: Props) {
                     Every verification, override, and login event is hashed and chained to prevent log tampering.
                   </p>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-orbitron text-xs font-bold">
-                  <span>✔</span>
-                  <span>CHAIN INTEGRITY: VERIFIED</span>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-orbitron text-xs font-bold">
+                    <span>✔</span>
+                    <span>CHAIN INTEGRITY: VERIFIED</span>
+                  </div>
+                  <button
+                    onClick={handleExportPdf}
+                    disabled={exportingPdf}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#C8102E] hover:bg-[#a50d26] text-white font-orbitron text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    title="Export tamper-evident SHA-256 Merkle audit trail as signed PDF certificate"
+                  >
+                    {exportingPdf ? (
+                      <>
+                        <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>GENERATING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>DOWNLOAD AUDIT PDF</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 

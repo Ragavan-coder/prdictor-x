@@ -10,7 +10,7 @@ import asyncio
 from typing import Dict
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -22,6 +22,7 @@ from auth import jwks_cache
 from routes.fdr import router as fdr_router, audit_router
 from routes.auth_routes import router as auth_router
 from routes.alert_routes import router as alert_router
+from telemetry_ws import telemetry_hub
 
 # ------------------------------------------------------------------------------
 # Rate Limiting & Security State
@@ -44,7 +45,14 @@ async def lifespan(app: FastAPI):
             await asyncio.sleep(3)
 
     asyncio.create_task(try_refresh_jwks())
+
+    # Start live telemetry stream background worker
+    stream_task = asyncio.create_task(telemetry_hub.stream_loop())
+
     yield
+
+    # Clean shutdown of telemetry stream
+    stream_task.cancel()
 
 
 app = FastAPI(
@@ -126,6 +134,39 @@ async def health_check():
         },
         "cors_origins": settings.cors_origins,
     }
+
+
+# ------------------------------------------------------------------------------
+# 5. Live WebSocket Telemetry Route
+# ------------------------------------------------------------------------------
+@app.websocket("/ws/telemetry")
+async def websocket_telemetry_endpoint(websocket: WebSocket):
+    """
+    Sub-second live streaming socket pushing simulated and real FDR verification
+    events, sensor performance metrics, and anomaly flags to connected dashboards.
+    """
+    await telemetry_hub.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            try:
+                import json
+                msg = json.loads(data)
+                action = msg.get("action")
+                if action == "trigger_scan":
+                    scan = telemetry_hub.generate_simulated_scan(force_anomaly=msg.get("force_anomaly", False))
+                    await websocket.send_json({
+                        "type": "MANUAL_SCAN_RESULT",
+                        "scan": scan,
+                    })
+                elif action == "ping":
+                    await websocket.send_json({"type": "PONG", "timestamp": time.time()})
+            except Exception as parse_err:
+                pass
+    except WebSocketDisconnect:
+        telemetry_hub.disconnect(websocket)
+    except Exception:
+        telemetry_hub.disconnect(websocket)
 
 
 if __name__ == "__main__":

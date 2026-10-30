@@ -193,3 +193,75 @@ export async function triggerTestAlert(payload: { title: string; severity: strin
   return res.json();
 }
 
+// -----------------------------------------------------------------------------
+// Live WebSocket Telemetry & Cryptographic PDF Export
+// -----------------------------------------------------------------------------
+export interface LiveTelemetryScan {
+  receipt_number: string;
+  bank: string;
+  bank_code: string;
+  principal: number;
+  interest_rate: number;
+  tenure_months: number;
+  maturity_amount: number;
+  status: 'VERIFIED_AUTHENTIC' | 'FLAGGED_ANOMALY';
+  confidence_score: number;
+  anomaly_title?: string | null;
+  anomaly_description?: string | null;
+  total_latency_ms: number;
+  layer_breakdown: {
+    layer1_evidence: string;
+    layer2_calc: string;
+    layer3_bank: string;
+    layer4_digits: string;
+  };
+  timestamp: number;
+  iso_time: string;
+  verified_by?: string;
+}
+
+export interface TelemetryMetrics {
+  throughput_fps: number;
+  avg_latency_ms: number;
+  anomaly_rate_pct: number;
+  total_scanned: number;
+  connected_peers: number;
+}
+
+export function getTelemetryWebSocketUrl(): string {
+  if (API_BASE_URL.startsWith('http')) {
+    try {
+      const url = new URL(API_BASE_URL);
+      return `${url.protocol === 'https:' ? 'wss:' : 'ws:'}//${url.host}/ws/telemetry`;
+    } catch {
+      return 'ws://localhost:8000/ws/telemetry';
+    }
+  }
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${wsProtocol}//${window.location.host}/ws/telemetry`;
+}
+
+export async function downloadAuditPdf(): Promise<void> {
+  const token = await getValidAccessToken();
+  const headers: HeadersInit = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  const res = await fetch(`${API_BASE_URL}/api/audit/export-pdf`, {
+    headers,
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to export audit PDF: ${res.statusText}`);
+  }
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sentra_cryptographic_audit_${Date.now()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
+
+
