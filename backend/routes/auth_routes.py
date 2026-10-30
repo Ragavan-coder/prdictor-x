@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from config import settings
 from audit import audit_log
+from notifications import notification_manager, AlertSeverity
 
 logger = logging.getLogger("predictra.auth_routes")
 router = APIRouter(prefix="/api/auth", tags=["Authentication & TOTP MFA"])
@@ -238,6 +239,14 @@ async def verify_totp(req: TotpVerifyRequest):
                 action="TOTP_MFA_FAILED",
                 actor_id=email_clean,
                 actor_username=email_clean,
+                details={"reason": "Invalid or expired 6-digit TOTP code"},
+            )
+            await notification_manager.trigger_alert(
+                event_type="TOTP_MFA_FAILED",
+                title=f"Failed TOTP Verification: {email_clean}",
+                description=f"User {email_clean} failed second-factor authentication verification with an invalid code.",
+                severity=AlertSeverity.HIGH,
+                actor=email_clean,
                 details={"reason": "Invalid or expired 6-digit TOTP code"},
             )
             raise HTTPException(

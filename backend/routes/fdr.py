@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from auth import AuthenticatedUser, get_current_user, require_role
 from audit import audit_log
+from notifications import notification_manager, AlertSeverity
 
 router = APIRouter(prefix="/api/fdr", tags=["Fixed Deposit Receipt Verification"])
 
@@ -162,6 +163,21 @@ async def verify_fdr(
         },
     )
 
+    if not calc_passed:
+        await notification_manager.trigger_alert(
+            event_type="FDR_ANOMALY_DETECTED",
+            title=f"Anomaly Flagged: {request.receipt_number}",
+            description=f"Calculated maturity delta exceeds tolerance ({diff:.2f}). Flagged for manual investigation.",
+            severity=AlertSeverity.HIGH,
+            actor=user.username,
+            details={
+                "receipt": request.receipt_number,
+                "bank": request.issuing_bank,
+                "principal": request.principal_amount,
+                "maturity_delta": round(diff, 2),
+            },
+        )
+
     return result
 
 
@@ -179,6 +195,19 @@ async def override_flagged_fdr(
         details={
             "reason": request.override_reason,
             "approved": request.approved_by_senior,
+        },
+    )
+
+    await notification_manager.trigger_alert(
+        event_type="FDR_ADMIN_OVERRIDE",
+        title=f"Security Override on FDR {request.receipt_number}",
+        description=f"Administrator {user.username} executed manual override on flagged FDR {request.receipt_number}. Reason: {request.override_reason}",
+        severity=AlertSeverity.CRITICAL,
+        actor=user.username,
+        details={
+            "receipt": request.receipt_number,
+            "reason": request.override_reason,
+            "approved_by_senior": request.approved_by_senior,
         },
     )
 

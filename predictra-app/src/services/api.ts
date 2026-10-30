@@ -133,3 +133,63 @@ export async function checkBackendHealth(): Promise<{ status: string; keycloak: 
     return null;
   }
 }
+
+export interface SecurityAlert {
+  id: string;
+  timestamp: number;
+  iso_time: string;
+  severity: 'INFO' | 'WARNING' | 'HIGH' | 'CRITICAL';
+  event_type: string;
+  title: string;
+  description: string;
+  actor: string;
+  ip_address?: string;
+  details: Record<string, unknown>;
+  dispatched_webhook: boolean;
+  dispatched_email: boolean;
+}
+
+export interface NotificationConfig {
+  webhook_url?: string;
+  webhook_enabled: boolean;
+  email_recipient?: string;
+  email_enabled: boolean;
+  min_severity: string;
+}
+
+export async function fetchRecentAlerts(limit: number = 30): Promise<SecurityAlert[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/alerts/recent?limit=${limit}`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchAlertConfig(): Promise<NotificationConfig> {
+  const res = await fetch(`${API_BASE_URL}/api/alerts/config`);
+  if (!res.ok) throw new Error('Failed to load alert config');
+  return res.json();
+}
+
+export async function updateAlertConfig(config: NotificationConfig): Promise<NotificationConfig> {
+  const res = await fetch(`${API_BASE_URL}/api/alerts/config`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(config),
+  });
+  if (!res.ok) throw new Error('Failed to update alert config');
+  return res.json();
+}
+
+export async function triggerTestAlert(payload: { title: string; severity: string; description: string }): Promise<SecurityAlert> {
+  const res = await fetch(`${API_BASE_URL}/api/alerts/test`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error('Failed to dispatch test alert');
+  return res.json();
+}
+

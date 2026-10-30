@@ -21,6 +21,7 @@ from config import settings
 from auth import jwks_cache
 from routes.fdr import router as fdr_router, audit_router
 from routes.auth_routes import router as auth_router
+from routes.alert_routes import router as alert_router
 
 # ------------------------------------------------------------------------------
 # Rate Limiting & Security State
@@ -104,6 +105,7 @@ async def security_middleware(request: Request, call_next):
 app.include_router(fdr_router)
 app.include_router(audit_router)
 app.include_router(auth_router)
+app.include_router(alert_router)
 
 
 # ------------------------------------------------------------------------------
