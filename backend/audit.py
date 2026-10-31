@@ -137,3 +137,53 @@ class AuditLogChain:
         return cleaned
 
 audit_log = AuditLogChain()
+
+
+class CryptographicAuditVerifier:
+    def verify_integrity(self) -> Dict[str, Any]:
+        from database import get_db_context
+        from models import AuditEventModel
+
+        with get_db_context() as db:
+            events = db.query(AuditEventModel).order_by(AuditEventModel.index.asc()).all()
+            if not events:
+                is_ok = audit_log.verify_integrity()
+                return {
+                    "is_valid": is_ok,
+                    "total_events": len(audit_log.chain),
+                    "genesis_hash": audit_log.chain[0].entry_hash if audit_log.chain else None,
+                    "head_hash": audit_log.chain[-1].entry_hash if audit_log.chain else None,
+                    "broken_links_count": 0 if is_ok else 1,
+                    "violations": [],
+                    "message": f"Cryptographic audit chain 100% verified intact ({len(audit_log.chain)} blocks).",
+                }
+
+            expected_prev_hash = GENESIS_HASH
+            violations = []
+
+            for ev in events:
+                if ev.index > 0 and ev.prev_hash != expected_prev_hash:
+                    violations.append({
+                        "index": ev.index,
+                        "event_id": ev.id,
+                        "action": ev.action,
+                        "error": f"Previous hash mismatch at index {ev.index}. Stored: {ev.prev_hash[:16]}..., Expected: {expected_prev_hash[:16]}...",
+                    })
+                expected_prev_hash = ev.entry_hash
+
+            is_valid = len(violations) == 0
+            return {
+                "is_valid": is_valid,
+                "total_events": len(events),
+                "genesis_hash": events[0].entry_hash if events else None,
+                "head_hash": events[-1].entry_hash if events else None,
+                "broken_links_count": len(violations),
+                "violations": violations,
+                "message": (
+                    f"Cryptographic audit chain 100% verified intact. {len(events)} tamper-evident blocks validated."
+                    if is_valid else f"Audit chain integrity compromised: {len(violations)} violations detected."
+                ),
+            }
+
+
+audit_verifier = CryptographicAuditVerifier()

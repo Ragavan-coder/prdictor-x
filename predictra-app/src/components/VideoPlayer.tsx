@@ -123,24 +123,24 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
         key="video-error"
         className="fixed inset-0 flex flex-col items-center justify-center"
         style={{
-          background: 'linear-gradient(180deg, #D9D9D9 0%, #D4D4D4 50%, #CDCDCD 100%)',
+          background: '#ECEDEA',
           zIndex: 80,
         }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className="text-center" style={{ maxWidth: 440, padding: '2rem' }}>
-          <div className="font-orbitron text-xl mb-3" style={{ color: '#C8102E' }}>
+        <div className="card w-full max-w-[640px] lg:max-w-[680px] mx-auto px-8 sm:px-14 md:px-16 py-8 sm:py-10 text-center rounded-2xl border-2 border-[#E4E7EC] shadow-2xl bg-white/95">
+          <div className="font-orbitron text-xl mb-3" style={{ color: '#8B1E2D' }}>
             ⚠ VIDEO TRANSITION
           </div>
-          <p className="font-rajdhani text-base mb-6" style={{ color: '#444444' }}>
+          <p className="font-rajdhani text-base mb-6 text-slate-600">
             Continuing to the PREDICTRA-X intelligence portal.
           </p>
           <button
             onClick={onComplete}
             className="btn-primary"
-            style={{ maxWidth: 260, margin: '0 auto' }}
+            style={{ maxWidth: 280, margin: '0 auto' }}
           >
             ENTER PORTAL →
           </button>
@@ -153,9 +153,9 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
     <motion.div
       key="video-player"
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
-      /* ── EXACT COLOR MATCH: Studio grey gradient matching Trust.mp4 perimeter ── */
+      /* ── EXACT COLOR MATCH: #ECEDEA — same as video studio surround & all page backgrounds ── */
       style={{
-        background: 'linear-gradient(180deg, #D9D9D9 0%, #D4D4D4 45%, #CDCDCD 100%)',
+        background: '#ECEDEA',
         zIndex: 80,
       }}
       initial={{ opacity: 0 }}
@@ -163,7 +163,7 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* ── AMBIENT VIDEO BACKLIGHT (Seamless blurred halo matching the video in real-time) ── */}
+      {/* ── AMBIENT VIDEO BACKLIGHT — tinted to #ECEDEA so glow blends seamlessly ── */}
       <video
         ref={ambientRef}
         src={src}
@@ -172,9 +172,10 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         style={{
-          filter: 'blur(45px) brightness(1.02) saturate(1.15)',
-          transform: 'scale(1.12)',
-          opacity: 0.85,
+          filter: 'blur(48px) brightness(0.98) saturate(0.85)',
+          transform: 'scale(1.14)',
+          opacity: 0.55,          /* reduced so ambient tint stays close to #ECEDEA */
+          mixBlendMode: 'multiply',
         }}
       />
 
@@ -188,7 +189,8 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
         style={{
           maxWidth: '100%',
           maxHeight: '100%',
-          filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.08))',
+          /* No drop-shadow — the page bg #ECEDEA matches the video border perfectly */
+          filter: 'none',
         }}
       />
 
@@ -202,7 +204,7 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
           onClick={toggleMute}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
-          className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-400/50 bg-white/90 backdrop-blur-md shadow-sm text-neutral-800 hover:text-[#C8102E] hover:border-[#C8102E] transition-all font-orbitron text-xs font-semibold cursor-pointer"
+          className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-400/50 bg-white/90 backdrop-blur-md shadow-sm text-neutral-800 hover:text-[#8B1E2D] hover:border-[#8B1E2D] transition-all font-orbitron text-xs font-semibold cursor-pointer"
         >
           <span className="text-sm">{isMuted ? '🔇' : '🔊'}</span>
           <span>{isMuted ? 'SOUND: MUTED (CLICK TO UNMUTE)' : 'SOUND: ON (100%)'}</span>
@@ -214,12 +216,12 @@ export default function VideoPlayer({ src, muted: initialMuted, onComplete }: Pr
         {/* Skip Video button */}
         <motion.button
           onClick={onComplete}
-          whileHover={{ scale: 1.05, borderColor: '#C8102E' }}
+          whileHover={{ scale: 1.05, borderColor: '#8B1E2D' }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-400/50 bg-white/90 backdrop-blur-md shadow-sm hover:border-[#C8102E] hover:text-[#C8102E] transition-all font-orbitron text-[0.68rem] font-semibold text-neutral-800 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-400/50 bg-white/90 backdrop-blur-md shadow-sm hover:border-[#8B1E2D] hover:text-[#8B1E2D] transition-all font-orbitron text-[0.68rem] font-semibold text-neutral-800 cursor-pointer"
         >
           <span>SKIP VIDEO</span>
-          <span className="text-[#C8102E]">→</span>
+          <span className="text-[#8B1E2D]">→</span>
         </motion.button>
       </div>
 

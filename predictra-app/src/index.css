@@ -15,10 +15,10 @@
   --charcoal:       #1A1A1A;
   --charcoal-mid:   #2D2D2D;
   --charcoal-light: #444444;
-  --grey-dark:      #666666;
-  --grey-mid:       #999999;
-  --grey-light:     #CCCCCC;
-  --grey-pale:      #E8E8E8;
+  --grey-dark:      #555555;
+  --grey-mid:       #777777;
+  --grey-light:     #BBBBBB;
+  --grey-pale:      #E2E2E2;
   --grey-faint:     #F2F2F2;
 
   --white:          #FFFFFF;
@@ -31,12 +31,36 @@
   --shadow-xl:  0 16px 48px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08);
 
   --shadow-red: 0 4px 20px rgba(200,16,46,0.20), 0 1px 4px rgba(200,16,46,0.10);
+
+  /* ── Typography scale (fluid, slightly boosted) ── */
+  --text-xs:   0.8rem;      /* 12.8 px — was 0.75rem */
+  --text-sm:   0.9rem;      /* 14.4 px — was 0.875rem */
+  --text-base: 1rem;        /* 16 px */
+  --text-md:   1.075rem;    /* 17.2 px */
+  --text-lg:   1.175rem;    /* 18.8 px */
+  --text-xl:   1.325rem;    /* 21.2 px */
+  --text-2xl:  1.6rem;      /* 25.6 px */
+  --text-3xl:  1.9rem;      /* 30.4 px */
+
+  /* Layout */
+  --sidebar-w: 16.5rem;     /* 264 px */
+  --header-h:  3.75rem;     /* 60 px */
+  --radius-card: 14px;      /* standardized 10-14px border radius */
+  --radius-btn:  12px;
+  --container-max: 680px;
+  --container-box: 640px;
 }
 
+/* ── Reset & base ── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  font-size: 16px;          /* anchor for rem */
+  scroll-behavior: smooth;
 }
 
 html, body {
@@ -44,7 +68,9 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: var(--white);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.6;
   color: var(--charcoal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -53,11 +79,14 @@ html, body {
 #root {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-::-webkit-scrollbar { width: 5px; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--grey-faint); }
-::-webkit-scrollbar-thumb { background: var(--grey-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--grey-light); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
 
 /* ============================================
@@ -121,7 +150,7 @@ html, body {
    ============================================ */
 .font-orbitron  { font-family: 'Orbitron',  monospace; }
 .font-rajdhani  { font-family: 'Rajdhani',  sans-serif; }
-.font-inter     { font-family: 'Inter',     sans-serif; }
+.font-inter     { font-family: 'Inter',     system-ui, sans-serif; }
 
 /* Crimson metallic — for logo/headings */
 .crimson-text {
@@ -146,51 +175,82 @@ html, body {
 }
 
 /* ============================================
-   CARD / PANEL
+   CARD / PANEL / ENTERPRISE BOXES
    ============================================ */
+.box-standard {
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 1024px) {
+  .box-standard {
+    max-width: 680px;
+  }
+}
+
+.box-padding-standard {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+@media (min-width: 640px) {
+  .box-padding-standard {
+    padding-left: 3.5rem;
+    padding-right: 3.5rem;
+  }
+}
+@media (min-width: 768px) {
+  .box-padding-standard {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
 .card {
   background: var(--white);
-  border: 1px solid var(--grey-pale);
-  box-shadow: var(--shadow-lg);
-  border-radius: 16px;
+  border: 1.5px solid #E4E7EC;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  border-radius: var(--radius-card);
 }
 
 .card-top-bar {
   height: 3px;
   background: linear-gradient(90deg,
     transparent 0%, var(--crimson-dark) 20%, var(--crimson) 50%, var(--crimson-dark) 80%, transparent 100%);
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 
 /* ============================================
-   SECURE INPUTS (light theme)
+   SECURE INPUTS (light theme) — larger & crisper
    ============================================ */
 .secure-input {
   width: 100%;
   background: var(--off-white);
-  border: 1.5px solid var(--grey-pale);
-  border-radius: 8px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: var(--radius-btn);
   color: var(--charcoal);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  padding: 0.75rem 1rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--text-sm);        /* boosted from 0.875rem */
+  line-height: 1.5;
+  padding: 0.8rem 1.1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   outline: none;
 }
 
 .secure-input:hover {
-  border-color: var(--grey-light);
+  border-color: #9CA3AF;
   background: var(--white);
 }
 
 .secure-input:focus {
   border-color: var(--crimson);
   background: var(--white);
-  box-shadow: 0 0 0 3px rgba(200,16,46,0.10);
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.12);
 }
 
 .secure-input::placeholder {
-  color: var(--grey-mid);
+  color: #9CA3AF;
+  font-size: var(--text-sm);
 }
 
 .secure-input:-webkit-autofill,
@@ -200,20 +260,20 @@ html, body {
 }
 
 /* ============================================
-   BUTTONS
+   BUTTONS — larger, more readable
    ============================================ */
 .btn-primary {
   width: 100%;
-  padding: 0.85rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   background: linear-gradient(135deg, var(--crimson-dark) 0%, var(--crimson) 50%, var(--crimson-dark) 100%);
   background-size: 200% auto;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-btn);
   color: #fff;
   font-family: 'Orbitron', monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
+  font-size: 0.78rem;               /* boosted from 0.7rem */
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
   position: relative;
@@ -254,15 +314,15 @@ html, body {
 .mfa-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   background: rgba(200,16,46,0.07);
-  border: 1px solid rgba(200,16,46,0.2);
+  border: 1px solid rgba(200,16,46,0.22);
   color: var(--crimson);
   font-family: 'Orbitron', monospace;
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  padding: 3px 10px;
+  font-size: 0.65rem;               /* boosted from 0.58rem */
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  padding: 4px 11px;
   border-radius: 100px;
   animation: badge-pulse 3s ease-in-out infinite;
 }
@@ -281,14 +341,10 @@ html, body {
 .ring-ccw { animation: ring-rotate-ccw var(--dur, 14s) linear infinite; }
 
 /* ============================================
-   INTRO SPECIFIC
+   INTRO SPECIFIC — #ECEDEA matches video studio bg
    ============================================ */
 .intro-bg {
-  background: linear-gradient(160deg,
-    #FAFAFA 0%,
-    #F2F2F2 35%,
-    #EEEEEE 60%,
-    #F5F5F5 100%);
+  background: #ECEDEA;
 }
 
 /* Subtle dot grid (matches video bg texture) */
@@ -298,14 +354,10 @@ html, body {
 }
 
 /* ============================================
-   AUTH PAGE BACKGROUND
+   AUTH PAGE — centred, scrollable on small screens
    ============================================ */
 .auth-bg {
-  background: linear-gradient(150deg,
-    #FFFFFF 0%,
-    #F8F8F8 40%,
-    #F2F2F2 70%,
-    #FAFAFA 100%);
+  background: #ECEDEA;
 }
 
 /* ============================================
@@ -315,10 +367,11 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 9px 13px;
+  border-radius: 7px;
   border: 1px solid transparent;
-  transition: all 0.4s ease;
+  transition: all 0.35s ease;
+  font-size: var(--text-sm);
 }
 
 .layer-item.active {
@@ -327,20 +380,85 @@ html, body {
 }
 
 /* ============================================
-   DASHBOARD STAT CARD
+   DASHBOARD STAT CARD & ELEVATED PANELS (HIGH CONTRAST)
    ============================================ */
 .stat-card {
-  background: var(--white);
-  border: 1px solid var(--grey-pale);
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-card);
+  padding: 1.35rem 1.5rem;          /* more breathing room */
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  min-height: 6.5rem;
 }
 
 .stat-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.09), 0 4px 8px -2px rgba(15, 23, 42, 0.05);
   transform: translateY(-2px);
+  border-color: #94A3B8;
+}
+
+.panel-box {
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 8px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.panel-box-header {
+  padding: 1.2rem 1.6rem;
+  background: #F8FAFC;
+  border-bottom: 1.5px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.panel-box-row {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-box-row:hover {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+/* Flexible grid & box rhythm */
+.flex-col-between {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Glass & telemetry pills — slightly larger */
+.telemetry-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;               /* boosted from 0.6875rem */
+  font-weight: 700;
+  padding: 0.28rem 0.7rem;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
 }
 
 /* ============================================
@@ -348,6 +466,88 @@ html, body {
    ============================================ */
 .top-nav {
   background: var(--white);
-  border-bottom: 1px solid var(--grey-pale);
-  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  border-bottom: 1.5px solid #CBD5E1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
+
+/* ============================================
+   FORM LABELS — crisper + larger
+   ============================================ */
+.form-label {
+  display: block;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;                /* was 0.62rem */
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+/* ============================================
+   RESPONSIVE HELPERS
+   ============================================ */
+
+/* Stack sidebar below on very small screens */
+@media (max-width: 640px) {
+  .sidebar-responsive {
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+  }
+}
+
+/* Make the main content flex nicely on all widths */
+.workspace-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.workspace-main {
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.workspace-scroll {
+  flex: 1 1 0%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .workspace-scroll {
+    padding: 2rem 2.25rem;
+  }
+}
+
+/* ============================================
+   TEXT READABILITY OVERRIDES
+   ============================================ */
+
+/* Ensure all prose text has enough weight/size */
+p, span, li, td, th, label {
+  font-size: inherit;
+  line-height: 1.6;
+}
+
+/* Minimum legible size for any text element */
+.text-readable {
+  font-size: var(--text-sm) !important;
+  line-height: 1.6 !important;
+  color: #1E293B;
+}
+
+/* High-contrast muted text */
+.text-muted-strong {
+  color: #475569 !important;
+  font-size: var(--text-xs) !important;
+}
+

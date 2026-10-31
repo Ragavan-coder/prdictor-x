@@ -97,12 +97,12 @@ export default function LiveTelemetryStream() {
   };
 
   return (
-    <div className="bg-white rounded-b-xl border border-neutral-200 p-6 shadow-xs font-rajdhani">
+    <div className="bg-white rounded-b-xl border border-[#E4E7EC] p-6 shadow-2xs font-rajdhani">
       {/* ── Status Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E4E7EC]">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="font-orbitron font-bold text-base text-neutral-900 tracking-tight flex items-center gap-2">
+            <h3 className="font-orbitron font-bold text-base text-[#20242C] tracking-tight flex items-center gap-2">
               REAL-TIME FDR TELEMETRY STREAM
             </h3>
             <span
@@ -120,7 +120,7 @@ export default function LiveTelemetryStream() {
               {connected ? 'WEBSOCKET ONLINE (WSS / RFC 6455)' : 'CONNECTING...'}
             </span>
           </div>
-          <p className="font-rajdhani text-xs text-neutral-600 mt-1">
+          <p className="font-rajdhani text-xs text-[#667085] mt-1">
             Real-time feed of multi-bank deposit receipts evaluated across SENTRA Layers 1–4.
           </p>
         </div>
@@ -129,10 +129,10 @@ export default function LiveTelemetryStream() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setPaused(!paused)}
-            className={`px-3 py-1.5 rounded-lg font-orbitron text-[0.65rem] font-bold tracking-wider transition-all cursor-pointer border ${
+            className={`px-3 py-1.5 rounded-xl font-orbitron text-[0.65rem] font-bold tracking-wider transition-all cursor-pointer border ${
               paused
                 ? 'bg-amber-500 text-white border-amber-600 hover:bg-amber-600'
-                : 'bg-neutral-100 text-neutral-700 border-neutral-300 hover:bg-neutral-200'
+                : 'bg-slate-100 text-[#20242C] border-[#E4E7EC] hover:bg-slate-200'
             }`}
           >
             {paused ? '▶ RESUME STREAM' : '⏸ PAUSE FEED'}
@@ -140,21 +140,21 @@ export default function LiveTelemetryStream() {
           <button
             onClick={() => handleTriggerManualScan(false)}
             disabled={!connected}
-            className="px-3 py-1.5 rounded-lg bg-neutral-900 text-white font-orbitron text-[0.65rem] font-bold tracking-wider hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-1.5 rounded-xl bg-[#20242C] text-white font-orbitron text-[0.65rem] font-bold tracking-wider hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50"
           >
             + SCAN RECEIPT
           </button>
           <button
             onClick={() => handleTriggerManualScan(true)}
             disabled={!connected}
-            className="px-3 py-1.5 rounded-lg bg-[#C8102E] text-white font-orbitron text-[0.65rem] font-bold tracking-wider hover:bg-[#a50d26] transition-all cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-1.5 rounded-xl bg-[#8B1E2D] text-white font-orbitron text-[0.65rem] font-bold tracking-wider hover:bg-[#6F1724] transition-all cursor-pointer disabled:opacity-50"
             title="Inject an artificial calculation or digit anomaly"
           >
             ! INJECT ANOMALY
           </button>
           <button
             onClick={handleClearStream}
-            className="px-2.5 py-1.5 rounded-lg bg-neutral-100 text-neutral-500 font-orbitron text-[0.65rem] font-bold hover:bg-neutral-200 transition-all cursor-pointer border border-neutral-300"
+            className="px-3 py-1.5 rounded-xl bg-slate-100 text-[#667085] font-orbitron text-[0.65rem] font-bold hover:bg-slate-200 transition-all cursor-pointer border border-[#E4E7EC]"
             title="Clear stream console"
           >
             CLEAR
@@ -164,32 +164,32 @@ export default function LiveTelemetryStream() {
 
       {/* ── Metric Scorecards ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 my-5">
-        <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
-          <div className="font-orbitron text-[0.62rem] text-neutral-500 font-semibold uppercase tracking-wider">
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-[#E4E7EC]">
+          <div className="font-orbitron text-[0.62rem] text-[#667085] font-semibold uppercase tracking-wider">
             Verification Throughput
           </div>
-          <div className="font-orbitron text-lg font-bold text-neutral-900 mt-1">
+          <div className="font-orbitron text-lg font-bold text-[#20242C] mt-1">
             {metrics.throughput_fps}{' '}
-            <span className="text-xs font-normal text-neutral-500">fps</span>
+            <span className="text-xs font-normal text-[#667085]">fps</span>
           </div>
           <div className="font-rajdhani text-[0.68rem] text-emerald-600 mt-0.5">
             ● Real-time buffer active
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
-          <div className="font-orbitron text-[0.62rem] text-neutral-500 font-semibold uppercase tracking-wider">
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-[#E4E7EC]">
+          <div className="font-orbitron text-[0.62rem] text-[#667085] font-semibold uppercase tracking-wider">
             Mean Pipeline Latency
           </div>
-          <div className="font-orbitron text-lg font-bold text-neutral-900 mt-1">
+          <div className="font-orbitron text-lg font-bold text-[#20242C] mt-1">
             {metrics.avg_latency_ms}{' '}
-            <span className="text-xs font-normal text-neutral-500">ms</span>
+            <span className="text-xs font-normal text-[#667085]">ms</span>
           </div>
           <div className="flex items-center gap-1 mt-1">
             {latencyHistory.map((val, idx) => (
               <div
                 key={idx}
-                className="w-2 rounded-xs bg-[#C8102E]/40"
+                className="w-2 rounded-xs bg-[#8B1E2D]/40"
                 style={{ height: `${Math.min(18, Math.max(4, val / 3))}px` }}
                 title={`${val} ms`}
               />
@@ -197,26 +197,26 @@ export default function LiveTelemetryStream() {
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
-          <div className="font-orbitron text-[0.62rem] text-neutral-500 font-semibold uppercase tracking-wider">
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-[#E4E7EC]">
+          <div className="font-orbitron text-[0.62rem] text-[#667085] font-semibold uppercase tracking-wider">
             Detected Anomaly Rate
           </div>
-          <div className="font-orbitron text-lg font-bold text-[#C8102E] mt-1">
+          <div className="font-orbitron text-lg font-bold text-[#8B1E2D] mt-1">
             {metrics.anomaly_rate_pct}%
           </div>
-          <div className="font-rajdhani text-[0.68rem] text-neutral-500 mt-0.5">
+          <div className="font-rajdhani text-[0.68rem] text-[#667085] mt-0.5">
             4-layer filter threshold
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
-          <div className="font-orbitron text-[0.62rem] text-neutral-500 font-semibold uppercase tracking-wider">
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-[#E4E7EC]">
+          <div className="font-orbitron text-[0.62rem] text-[#667085] font-semibold uppercase tracking-wider">
             Total Scanned FDRs
           </div>
-          <div className="font-orbitron text-lg font-bold text-neutral-900 mt-1">
+          <div className="font-orbitron text-lg font-bold text-[#20242C] mt-1">
             {metrics.total_scanned.toLocaleString()}
           </div>
-          <div className="font-rajdhani text-[0.68rem] text-neutral-500 mt-0.5">
+          <div className="font-rajdhani text-[0.68rem] text-[#667085] mt-0.5">
             Chained in SHA-256 Merkle log
           </div>
         </div>

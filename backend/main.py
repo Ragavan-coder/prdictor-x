@@ -19,9 +19,20 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from config import settings
 from auth import jwks_cache
+from database import init_db
 from routes.fdr import router as fdr_router, audit_router
 from routes.auth_routes import router as auth_router
 from routes.alert_routes import router as alert_router
+from routes.document_routes import router as document_router
+from routes.dashboard_routes import router as dashboard_router
+from routes.sentra_routes import router as sentra_router
+from routes.guardian_routes import router as guardian_router
+from routes.duplicate_routes import router as duplicate_router
+from routes.risk_routes import router as risk_router
+from routes.notification_routes import router as notification_router
+from routes.lifecycle_routes import router as lifecycle_router
+from routes.audit_routes import router as audit_integrity_router
+from routes.report_routes import router as report_router
 from telemetry_ws import telemetry_hub
 
 # ------------------------------------------------------------------------------
@@ -36,13 +47,19 @@ ip_request_history: Dict[str, list] = {}
 # ------------------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Pre-fetch Keycloak JWKS if Keycloak is up, otherwise non-blocking background retry
+    # Initialize database tables and initial baseline seeds
+    try:
+        init_db()
+    except Exception as db_err:
+        print(f"Database schema init warning: {db_err}")
+
+    # Check Keycloak JWKS availability; non-blocking background task
     async def try_refresh_jwks():
-        for _ in range(5):
+        for _ in range(2):
             await jwks_cache.refresh()
             if jwks_cache.keys:
                 break
-            await asyncio.sleep(3)
+            await asyncio.sleep(2)
 
     asyncio.create_task(try_refresh_jwks())
 
@@ -114,6 +131,16 @@ app.include_router(fdr_router)
 app.include_router(audit_router)
 app.include_router(auth_router)
 app.include_router(alert_router)
+app.include_router(document_router)
+app.include_router(dashboard_router)
+app.include_router(sentra_router)
+app.include_router(guardian_router)
+app.include_router(duplicate_router)
+app.include_router(risk_router)
+app.include_router(notification_router)
+app.include_router(lifecycle_router)
+app.include_router(audit_integrity_router)
+app.include_router(report_router)
 
 
 # ------------------------------------------------------------------------------

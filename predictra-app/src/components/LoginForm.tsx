@@ -148,6 +148,10 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
           throw new Error(data.detail || 'Invalid TOTP code');
         }
 
+        if (data.access_token) {
+          localStorage.setItem('predictra_access_token', data.access_token);
+        }
+
         const isAdmin = targetEmail.includes('admin');
         onSuccess({
           id: `user-${targetEmail.replace(/[@.]/g, '-')}`,
@@ -188,15 +192,15 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
     return (
       <motion.form
         onSubmit={handleMfaSubmit}
-        className="flex flex-col gap-4 text-neutral-800"
+        className="w-full box-border flex flex-col gap-4 text-neutral-800"
         initial={{ opacity: 0, x: 18 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -18 }}
         transition={{ duration: 0.28 }}
       >
-        <div className="text-center mb-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C8102E]/10 border border-[#C8102E]/25 text-[#C8102E] font-orbitron text-[0.65rem] font-bold tracking-widest uppercase mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse" />
+        <div className="text-center mb-1 w-full box-border">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8B1E2D]/10 border border-[#8B1E2D]/25 text-[#8B1E2D] font-orbitron text-[0.65rem] font-bold tracking-widest uppercase mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8B1E2D] animate-pulse" />
             {mfaMode === 'enroll' ? 'TOTP MFA ENROLLMENT REQUIRED' : 'SECOND-FACTOR AUTHENTICATION'}
           </div>
           <h2 className="font-orbitron font-bold text-sm text-neutral-900 tracking-wide">
@@ -211,8 +215,8 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
 
         {/* Real Scannable QR Code display for Enrollment mode */}
         {mfaMode === 'enroll' && (
-          <div className="flex flex-col items-center p-3 rounded-lg bg-neutral-50 border border-neutral-200">
-            <div className="w-36 h-36 bg-white p-2 rounded border border-neutral-300 shadow-xs flex items-center justify-center [&>svg]:w-full [&>svg]:h-full overflow-hidden">
+          <div className="w-full box-border flex flex-col items-center p-4 rounded-xl bg-neutral-50 border border-neutral-200">
+            <div className="w-36 h-36 bg-white p-2 rounded-lg border border-neutral-300 shadow-xs flex items-center justify-center [&>svg]:w-full [&>svg]:h-full overflow-hidden">
               {totpQrSvg ? (
                 <div dangerouslySetInnerHTML={{ __html: totpQrSvg }} className="w-full h-full flex items-center justify-center" />
               ) : (
@@ -224,7 +228,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
               <span className="font-rajdhani text-[0.7rem] text-neutral-500 uppercase tracking-wider block">
                 Manual Setup Key (Base32):
               </span>
-              <code className="font-orbitron text-xs text-[#C8102E] font-bold tracking-widest select-all bg-white px-2 py-0.5 rounded border border-neutral-300 inline-block mt-0.5">
+              <code className="font-orbitron text-xs text-[#8B1E2D] font-bold tracking-widest select-all bg-white px-2 py-0.5 rounded border border-neutral-300 inline-block mt-0.5">
                 {totpSecret}
               </code>
             </div>
@@ -232,13 +236,13 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         )}
 
         {/* 6-Digit Code Input with Rotation Progress */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
+        <div className="w-full box-border flex flex-col gap-1.5">
+          <div className="w-full box-border flex items-center justify-between">
             <label className="font-orbitron text-[0.62rem] text-neutral-600 tracking-wider uppercase font-semibold">
-              6-Digit Verification Code <span className="text-[#C8102E]">*</span>
+              6-Digit Verification Code <span className="text-[#8B1E2D]">*</span>
             </label>
             <span className="font-rajdhani text-xs font-semibold text-neutral-500 flex items-center gap-1">
-              ⏱ Rotates in: <span className="font-orbitron text-[#C8102E]">{secondsRemaining}s</span>
+              ⏱ Rotates in: <span className="font-orbitron text-[#8B1E2D]">{secondsRemaining}s</span>
             </span>
           </div>
 
@@ -249,14 +253,14 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
             value={mfaCode}
             onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
             placeholder="000000"
-            className="secure-input text-center text-xl md:text-2xl font-orbitron font-bold tracking-[0.45em] text-[#C8102E]"
+            className="secure-input w-full box-border text-center text-xl md:text-2xl font-orbitron font-bold tracking-[0.45em] text-[#8B1E2D]"
             autoFocus
           />
 
           {/* 30-Second Rotation Progress Bar */}
           <div className="w-full h-1 bg-neutral-200 rounded-full overflow-hidden mt-0.5">
             <div
-              className="h-full bg-[#C8102E] transition-all duration-1000 ease-linear"
+              className="h-full bg-[#8B1E2D] transition-all duration-1000 ease-linear"
               style={{ width: `${(secondsRemaining / 30) * 100}%` }}
             />
           </div>
@@ -270,18 +274,18 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         />
 
         {/* Quick helpers & mode switch */}
-        <div className="flex items-center justify-between text-xs font-rajdhani text-neutral-500 pt-1">
+        <div className="w-full box-border flex items-center justify-between text-xs font-rajdhani text-neutral-500 pt-1">
           <button
             type="button"
             onClick={() => setMfaMode((m) => (m === 'verify' ? 'enroll' : 'verify'))}
-            className="hover:text-[#C8102E] underline transition-colors cursor-pointer"
+            className="hover:text-[#8B1E2D] underline transition-colors cursor-pointer"
           >
             {mfaMode === 'verify' ? 'Switch to QR Enrollment View' : 'Back to Code Verification'}
           </button>
           <button
             type="button"
             onClick={handleFillDemoCode}
-            className="hover:text-[#C8102E] transition-colors cursor-pointer flex items-center gap-1"
+            className="hover:text-[#8B1E2D] transition-colors cursor-pointer flex items-center gap-1"
           >
             ⚡ <span className="underline font-semibold">Fill active code</span>
           </button>
@@ -293,7 +297,7 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
             setMfaStep(false);
             setError('');
           }}
-          className="text-xs font-rajdhani text-neutral-400 hover:text-neutral-700 transition-colors text-center mt-2 cursor-pointer"
+          className="w-full box-border text-xs font-rajdhani text-neutral-400 hover:text-neutral-700 transition-colors text-center mt-2 cursor-pointer"
         >
           ← Return to credential input
         </button>
@@ -306,65 +310,65 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
      ────────────────────────────────────────────────────────────────────────── */
   return (
     <motion.div
-      className="flex flex-col gap-4 text-neutral-800"
+      className="w-full box-border flex flex-col gap-4 text-neutral-800"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Keycloak IdP Status Badge */}
+      {/* Keycloak IdP Status Badge — Standardized Width */}
       <div
-        className={`px-3 py-2 rounded-lg border text-xs font-rajdhani flex items-center justify-between transition-colors ${
+        className={`w-full box-border px-3.5 py-2.5 rounded-xl border text-xs font-rajdhani flex items-center justify-between transition-colors ${
           keycloakOnline
             ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
             : 'bg-amber-50 border-amber-200 text-amber-900'
         }`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <span
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 rounded-full flex-shrink-0 ${
               keycloakOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
             }`}
           />
-          <span className="font-semibold">
+          <span className="font-semibold truncate">
             {keycloakOnline
               ? 'Keycloak Identity Provider: ONLINE (Realm: predictra-x)'
               : 'Keycloak Server Offline (Port 8080)'}
           </span>
         </div>
-        <span className="font-orbitron text-[0.6rem] font-bold uppercase tracking-wider text-neutral-500">
+        <span className="font-orbitron text-[0.62rem] font-bold uppercase tracking-wider text-neutral-500 flex-shrink-0 pl-2">
           PKCE S256
         </span>
       </div>
 
-      {/* Primary Action: Direct Keycloak OIDC + TOTP Login */}
+      {/* Primary Action: Direct Keycloak OIDC + TOTP Login (Standardized h-12 Box) */}
       <motion.button
         type="button"
         onClick={handleKeycloakLogin}
         disabled={keycloakLoading}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white font-orbitron text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md border border-neutral-700 hover:border-[#C8102E] cursor-pointer transition-all"
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
+        className="w-full h-12 box-border rounded-xl bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white font-orbitron text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md border border-neutral-700 hover:border-[#8B1E2D] cursor-pointer transition-all"
       >
-        <svg className="w-4 h-4 text-[#C8102E]" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="w-4 h-4 text-[#8B1E2D] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
         </svg>
-        <span>
+        <span className="truncate">
           {keycloakLoading ? 'CONNECTING TO KEYCLOAK...' : 'SIGN IN VIA KEYCLOAK + TOTP'}
         </span>
-        <span className="text-[#C8102E] font-bold">→</span>
+        <span className="text-[#8B1E2D] font-bold flex-shrink-0">→</span>
       </motion.button>
 
-      {/* Divider */}
-      <div className="flex items-center gap-3 my-1">
+      {/* Divider — Centered & Full Width */}
+      <div className="w-full box-border flex items-center gap-3 my-1">
         <div className="flex-1 h-px bg-neutral-200" />
-        <span className="font-rajdhani text-xs text-neutral-400 uppercase tracking-widest font-semibold">
+        <span className="font-rajdhani text-xs text-neutral-400 uppercase tracking-widest font-semibold whitespace-nowrap text-center select-none">
           OR LOCAL AUTHENTICATION
         </span>
         <div className="flex-1 h-px bg-neutral-200" />
       </div>
 
-      {/* In-app Password Login Form */}
-      <form onSubmit={handlePasswordLogin} className="flex flex-col gap-3.5">
+      {/* In-app Password Login Form — Perfect Grid & Input Clearances */}
+      <form onSubmit={handlePasswordLogin} className="w-full box-border flex flex-col gap-4">
         <FormField
           id="email-field"
           label="Email or Username"
@@ -397,43 +401,44 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
             <button
               type="button"
               onClick={() => setShowPass((s) => !s)}
-              className="text-xs font-rajdhani text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer"
+              className="text-xs font-rajdhani font-semibold text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer select-none"
             >
               {showPass ? 'HIDE' : 'SHOW'}
             </button>
           }
         />
 
-        <div className="flex items-center justify-between text-xs font-rajdhani pt-1">
+        <div className="w-full box-border flex items-center justify-between text-xs font-rajdhani pt-0.5">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              className="rounded text-[#C8102E] focus:ring-[#C8102E] cursor-pointer"
+              className="rounded text-[#8B1E2D] focus:ring-[#8B1E2D] cursor-pointer"
             />
-            <span className="text-neutral-600">Remember session</span>
+            <span className="text-neutral-600 font-medium">Remember session</span>
           </label>
           <button
             type="button"
             onClick={onForgot}
-            className="text-[#C8102E] hover:underline transition-all cursor-pointer font-semibold"
+            className="text-[#8B1E2D] hover:underline transition-all cursor-pointer font-semibold"
           >
             Forgot Password?
           </button>
         </div>
 
-        {/* 1-Click Fill Demo Credentials Button */}
-        <div className="flex justify-end pt-0.5">
+        {/* 1-Click Fill Demo Credentials Button — Clean Centered Action */}
+        <div className="w-full box-border flex justify-center pt-2 border-t border-dashed border-neutral-200">
           <button
             type="button"
             onClick={() => {
               setEmail(DEV_CREDS.email);
               setPassword(DEV_CREDS.password);
             }}
-            className="font-rajdhani text-xs text-neutral-500 hover:text-[#C8102E] transition-colors cursor-pointer inline-flex items-center gap-1"
+            className="font-rajdhani text-xs text-neutral-500 hover:text-[#8B1E2D] transition-colors cursor-pointer inline-flex items-center gap-1.5 py-1"
           >
-            ⚡ <span className="underline font-semibold">Demo credentials (1-click fill)</span>
+            <span>⚡</span>
+            <span className="underline font-semibold">Fill Demo Credentials (admin@predictra.x)</span>
           </button>
         </div>
 
@@ -442,15 +447,15 @@ export default function LoginForm({ onSuccess, onForgot, onSignup }: Props) {
         <SubmitButton loading={loading} label="VALIDATE CREDENTIALS →" />
       </form>
 
-      {/* Switch to Signup */}
-      <div className="text-center pt-2 border-t border-neutral-100">
+      {/* Switch to Signup — Full Width Centered Container */}
+      <div className="w-full box-border text-center pt-3 border-t border-neutral-200">
         <button
           type="button"
           onClick={onSignup}
-          className="font-rajdhani text-xs text-neutral-500 hover:text-[#C8102E] transition-colors cursor-pointer"
+          className="font-rajdhani text-xs text-neutral-600 hover:text-[#8B1E2D] transition-colors cursor-pointer inline-flex items-center justify-center gap-1"
         >
-          New operator?{' '}
-          <span className="text-[#C8102E] font-bold">
+          <span>New operator?</span>
+          <span className="text-[#8B1E2D] font-bold underline">
             Register Account & Enroll TOTP →
           </span>
         </button>
@@ -464,10 +469,10 @@ function ErrorBanner({ message }: { message: string }) {
     <motion.div
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
-      className="bg-red-50 border border-red-200 rounded-lg p-2.5 font-rajdhani text-xs text-[#C8102E] flex items-center gap-2"
+      className="w-full box-border bg-red-50 border border-red-200 rounded-xl p-3 font-rajdhani text-xs text-[#8B1E2D] flex items-center gap-2"
     >
       <span>⚠</span>
-      <span>{message}</span>
+      <span className="font-semibold">{message}</span>
     </motion.div>
   );
 }

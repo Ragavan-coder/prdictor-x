@@ -1,0 +1,3 @@
+#!/bin/bash
+echo 'Disguised executable disguised as PDF'
+exit 1

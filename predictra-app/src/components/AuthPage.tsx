@@ -27,35 +27,36 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
     >
       <SecurityBackground />
 
-      {/* Centred Card Container */}
+      {/* Centred Card Container — Strict Width & Grid Alignment */}
       <motion.div
-        className="relative z-10 w-full max-w-lg my-auto"
+        className="relative z-10 w-full max-w-[480px] sm:max-w-[500px] my-auto mx-auto box-border"
         initial={{ y: 24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Return to Portal Header */}
         {onBackToPortal && (
-          <div className="flex justify-between items-center mb-3 px-1">
+          <div className="w-full box-border flex justify-between items-center mb-4 px-1">
             <motion.button
               onClick={onBackToPortal}
               whileHover={{ x: -3 }}
-              className="inline-flex items-center gap-1.5 text-xs font-rajdhani font-semibold text-neutral-600 hover:text-[#C8102E] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 font-rajdhani font-semibold text-neutral-600 hover:text-[#8B1E2D] transition-colors cursor-pointer"
+              style={{ fontSize: '0.85rem' }}
             >
               <span>←</span>
               <span className="tracking-wider uppercase">Return to System Portal</span>
             </motion.button>
 
-            <span className="font-orbitron text-[0.62rem] text-neutral-500 uppercase tracking-widest">
+            <span className="font-orbitron text-neutral-500 uppercase tracking-widest text-[0.65rem]">
               Security Level 4 · MFA
             </span>
           </div>
         )}
 
         {/* Brand header */}
-        <div className="text-center mb-5">
+        <div className="text-center mb-6 w-full box-border">
           <motion.div
-            className="flex justify-center mb-2"
+            className="flex justify-center mb-3"
             initial={{ scale: 0, rotate: -120 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.25, duration: 0.6, type: 'spring', stiffness: 220 }}
@@ -65,7 +66,7 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
 
           <motion.div
             className="font-orbitron font-black tracking-wider flex items-baseline justify-center"
-            style={{ fontSize: 'clamp(1.3rem, 4vw, 1.75rem)' }}
+            style={{ fontSize: 'clamp(1.4rem, 4vw, 1.85rem)' }}
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
@@ -97,7 +98,7 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
           </motion.div>
 
           <motion.p
-            className="font-rajdhani text-xs tracking-[0.2em] mt-1 font-semibold text-neutral-600"
+            className="font-rajdhani tracking-[0.2em] mt-1.5 font-semibold text-neutral-600 text-[0.85rem]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
@@ -106,9 +107,9 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
           </motion.p>
         </div>
 
-        {/* Security Card */}
+        {/* Security Card — 24px-32px Padding & Zero Edge Leakage */}
         <motion.div
-          className="card overflow-hidden bg-white/95 backdrop-blur-md shadow-xl border border-neutral-200 rounded-2xl"
+          className="card w-full box-border overflow-hidden bg-white/95 backdrop-blur-md shadow-2xl border-2 border-[#E4E7EC] rounded-2xl"
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -116,8 +117,8 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
           {/* Top crimson accent bar */}
           <div className="card-top-bar" />
 
-          {/* Navigation Tabs */}
-          <div className="flex border-b border-neutral-200">
+          {/* Navigation Tabs — Strict Equal-Width 3-Column Grid */}
+          <div className="grid grid-cols-3 w-full box-border border-b border-[#E4E7EC] bg-slate-50/60">
             {[
               { id: 'login', label: 'SIGN IN' },
               { id: 'signup', label: 'CREATE ACCOUNT' },
@@ -125,22 +126,21 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
             ].map((tab) => (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setView(tab.id as AuthView)}
-                className="flex-1 py-3 font-orbitron text-[0.68rem] tracking-wider uppercase transition-all duration-200 cursor-pointer font-bold"
-                style={{
-                  color: view === tab.id ? '#C8102E' : '#737373',
-                  background: view === tab.id ? 'rgba(200,16,46,0.04)' : 'transparent',
-                  borderBottom: view === tab.id ? '2.5px solid #C8102E' : '2.5px solid transparent',
-                  marginBottom: '-1px',
-                }}
+                className={`h-12 w-full box-border flex items-center justify-center text-center font-orbitron font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer border-b-2 text-[0.66rem] sm:text-xs px-1 ${
+                  view === tab.id
+                    ? 'border-[#8B1E2D] text-[#8B1E2D] bg-[#8B1E2D]/5'
+                    : 'border-transparent text-[#667085] hover:text-[#20242C] hover:bg-slate-100/50'
+                }`}
               >
-                {tab.label}
+                <span className="truncate">{tab.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Tab Views */}
-          <div className="p-6">
+          {/* Tab Views with Strict 24px-32px Padding (p-6 sm:p-8) */}
+          <div className="p-6 sm:p-8 w-full box-border">
             <AnimatePresence mode="wait">
               {view === 'login' && (
                 <LoginForm
@@ -169,13 +169,13 @@ export default function AuthPage({ onAuthSuccess, onBackToPortal }: Props) {
 
         {/* Footer badges */}
         <motion.div
-          className="flex items-center justify-center gap-3 mt-4"
+          className="w-full box-border flex items-center justify-center gap-3 mt-5 flex-wrap px-1"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
         >
           <div className="mfa-badge">KEYCLOAK TOTP MFA</div>
-          <span className="font-rajdhani text-xs text-neutral-500 font-semibold tracking-wide">
+          <span className="font-rajdhani text-neutral-500 font-semibold tracking-wide text-xs">
             OpenID Connect · PKCE S256 · SHA-256 Audit Chain
           </span>
         </motion.div>
@@ -235,54 +235,54 @@ function MFAGuidanceView({ onBack }: { onBack: () => void }) {
       exit={{ opacity: 0, y: -10 }}
       className="flex flex-col gap-4 font-rajdhani text-neutral-800"
     >
-      <div className="border-b border-neutral-200 pb-2">
-        <h3 className="font-orbitron text-xs font-bold text-neutral-900 tracking-wider uppercase">
+      <div className="border-b border-neutral-200 pb-3">
+        <h3 className="font-orbitron font-bold text-neutral-900 tracking-wider uppercase" style={{ fontSize: '0.78rem' }}>
           Keycloak TOTP Multi-Factor Authentication
         </h3>
-        <p className="text-xs text-neutral-500 mt-1">
+        <p className="text-neutral-500 mt-1.5" style={{ fontSize: '0.85rem' }}>
           PREDICTRA-X enforces RFC 6238 Time-based One-Time Password verification for all operators.
         </p>
       </div>
 
-      <div className="space-y-3 text-xs">
-        <div className="flex gap-2.5 items-start p-2.5 rounded-lg bg-neutral-50 border border-neutral-200">
-          <span className="font-orbitron font-bold text-sm text-[#C8102E]">1</span>
+      <div className="space-y-3" style={{ fontSize: '0.85rem' }}>
+        <div className="flex gap-3 items-start p-3 rounded-lg bg-neutral-50 border border-neutral-200">
+          <span className="font-orbitron font-bold text-[#C8102E] flex-shrink-0" style={{ fontSize: '1rem' }}>1</span>
           <div>
-            <span className="font-bold text-neutral-900 block">Enroll an Authenticator App</span>
-            <span className="text-neutral-600">
+            <span className="font-bold text-neutral-900 block mb-0.5">Enroll an Authenticator App</span>
+            <span className="text-neutral-600 leading-relaxed">
               Download Google Authenticator, Microsoft Authenticator, FreeOTP, or Aegis on your mobile device.
             </span>
           </div>
         </div>
 
-        <div className="flex gap-2.5 items-start p-2.5 rounded-lg bg-neutral-50 border border-neutral-200">
-          <span className="font-orbitron font-bold text-sm text-[#C8102E]">2</span>
+        <div className="flex gap-3 items-start p-3 rounded-lg bg-neutral-50 border border-neutral-200">
+          <span className="font-orbitron font-bold text-[#C8102E] flex-shrink-0" style={{ fontSize: '1rem' }}>2</span>
           <div>
-            <span className="font-bold text-neutral-900 block">Scan QR Code or Enter Setup Key</span>
-            <span className="text-neutral-600">
+            <span className="font-bold text-neutral-900 block mb-0.5">Scan QR Code or Enter Setup Key</span>
+            <span className="text-neutral-600 leading-relaxed">
               Upon first registration or initial login, Keycloak automatically renders a high-res QR code and Base32 setup key.
             </span>
           </div>
         </div>
 
-        <div className="flex gap-2.5 items-start p-2.5 rounded-lg bg-neutral-50 border border-neutral-200">
-          <span className="font-orbitron font-bold text-sm text-[#C8102E]">3</span>
+        <div className="flex gap-3 items-start p-3 rounded-lg bg-neutral-50 border border-neutral-200">
+          <span className="font-orbitron font-bold text-[#C8102E] flex-shrink-0" style={{ fontSize: '1rem' }}>3</span>
           <div>
-            <span className="font-bold text-neutral-900 block">Subsequent Two-Factor Logins</span>
-            <span className="text-neutral-600">
+            <span className="font-bold text-neutral-900 block mb-0.5">Subsequent Two-Factor Logins</span>
+            <span className="text-neutral-600 leading-relaxed">
               Every login requires both your password and the active 6-digit TOTP code (refreshed every 30 seconds).
             </span>
           </div>
         </div>
       </div>
 
-      <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs">
-        <span className="font-bold text-amber-900 block font-orbitron text-[0.65rem] tracking-wider uppercase mb-1">
+      <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200" style={{ fontSize: '0.85rem' }}>
+        <span className="font-bold text-amber-900 block font-orbitron tracking-wider uppercase mb-1.5" style={{ fontSize: '0.68rem' }}>
           Secure Account Recovery Policy:
         </span>
         <p className="text-amber-800 leading-relaxed">
           If your authenticator device is lost or compromised, contact your designated Sentra Realm Administrator
-          (<code className="bg-amber-100/80 px-1 py-0.5 rounded text-amber-900 font-semibold">admin@predictra.x</code>).
+          (<code className="bg-amber-100/80 px-1.5 py-0.5 rounded text-amber-900 font-semibold font-mono text-sm">admin@predictra.x</code>).
           Administrators can reset TOTP credentials via the Keycloak Console or issue a temporary emergency bypass token after identity re-verification.
         </p>
       </div>
@@ -290,7 +290,7 @@ function MFAGuidanceView({ onBack }: { onBack: () => void }) {
       <button
         type="button"
         onClick={onBack}
-        className="w-full py-2.5 rounded-lg bg-neutral-900 text-white font-orbitron text-xs font-bold tracking-wider uppercase cursor-pointer hover:bg-neutral-800 transition-colors"
+        className="w-full h-12 box-border rounded-xl bg-[#20242C] text-white font-orbitron font-bold tracking-wider uppercase cursor-pointer hover:bg-neutral-800 transition-colors flex items-center justify-center text-xs"
       >
         ← BACK TO SIGN IN
       </button>
@@ -311,23 +311,23 @@ function ForgotForm({ onBack }: { onBack: () => void }) {
       className="flex flex-col gap-4"
     >
       <div className="text-center mb-1">
-        <h3 className="font-orbitron font-bold text-xs uppercase tracking-wider text-neutral-900">
-          Password & TOTP Reset Request
+        <h3 className="font-orbitron font-bold uppercase tracking-wider text-neutral-900" style={{ fontSize: '0.78rem' }}>
+          Password &amp; TOTP Reset Request
         </h3>
-        <p className="font-rajdhani text-xs text-neutral-500 mt-1">
+        <p className="font-rajdhani text-neutral-500 mt-1.5" style={{ fontSize: '0.85rem' }}>
           Enter your registered email to trigger Keycloak's secure credential recovery flow.
         </p>
       </div>
 
       {submitted ? (
-        <div className="text-center py-4">
-          <div className="text-2xl mb-2">✉</div>
-          <p className="font-rajdhani text-xs text-neutral-700">
+        <div className="text-center py-5">
+          <div className="text-3xl mb-3">✉</div>
+          <p className="font-rajdhani text-neutral-700" style={{ fontSize: '0.88rem' }}>
             If an account exists for <strong className="text-neutral-900">{email}</strong>, a secure reset link with MFA confirmation has been dispatched.
           </p>
           <button
             onClick={onBack}
-            className="btn-primary mt-4 py-2 font-orbitron text-xs"
+            className="btn-primary w-full h-12 box-border rounded-xl mt-5 font-orbitron font-bold tracking-wider uppercase flex items-center justify-center text-xs"
           >
             ← BACK TO SIGN IN
           </button>
@@ -338,7 +338,7 @@ function ForgotForm({ onBack }: { onBack: () => void }) {
             e.preventDefault();
             setSubmitted(true);
           }}
-          className="flex flex-col gap-3.5"
+          className="flex flex-col gap-4"
         >
           <FormField
             id="forgot-email"
@@ -355,7 +355,8 @@ function ForgotForm({ onBack }: { onBack: () => void }) {
           <button
             type="button"
             onClick={onBack}
-            className="text-xs font-rajdhani text-neutral-500 hover:text-neutral-900 text-center cursor-pointer mt-1"
+            className="font-rajdhani text-neutral-500 hover:text-neutral-900 text-center cursor-pointer mt-1 transition-colors"
+            style={{ fontSize: '0.85rem' }}
           >
             ← Cancel and return to sign in
           </button>
@@ -395,50 +396,52 @@ export function FormField({
 }: FormFieldProps) {
   const fieldId = id || `field-${label.toLowerCase().replace(/\s+/g, '-')}`;
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between">
+    <div className="w-full box-border flex flex-col gap-1.5">
+      <div className="w-full box-border flex items-center justify-between">
         <label
           htmlFor={fieldId}
-          className="font-orbitron text-[0.62rem] font-semibold text-neutral-600 tracking-wider uppercase"
+          className="font-orbitron font-semibold text-neutral-700 tracking-wider uppercase text-[0.68rem] leading-none select-none"
         >
-          {label} {required && <span className="text-[#C8102E]">*</span>}
+          {label} {required && <span className="text-[#8B1E2D] font-bold">*</span>}
         </label>
         {rightElement}
       </div>
 
-      <input
-        id={fieldId}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        required={required}
-        autoComplete={autoComplete}
-        className={`secure-input ${
-          error ? 'border-[#C8102E] focus:border-[#C8102E]' : 'border-neutral-300'
-        }`}
-      />
+      <div className="relative w-full box-border">
+        <input
+          id={fieldId}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          required={required}
+          autoComplete={autoComplete}
+          className={`secure-input w-full box-border block ${
+            error ? 'border-[#8B1E2D] focus:border-[#8B1E2D]' : 'border-neutral-300'
+          }`}
+        />
+      </div>
 
       {error ? (
-        <span className="font-rajdhani text-[0.72rem] text-[#C8102E] font-medium">{error}</span>
+        <span className="font-rajdhani text-[#8B1E2D] font-semibold text-xs leading-tight mt-0.5">{error}</span>
       ) : hint ? (
-        <span className="font-rajdhani text-[0.7rem] text-neutral-500">{hint}</span>
+        <span className="font-rajdhani text-neutral-500 text-xs leading-tight mt-0.5">{hint}</span>
       ) : null}
     </div>
   );
 }
 
-/* ── Reusable SubmitButton ── */
+/* ── Reusable SubmitButton (Standardized h-12 w-full Grid Alignment) ── */
 export function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
   return (
     <button
       type="submit"
       disabled={loading}
-      className="btn-primary mt-1 w-full py-2.5 font-orbitron text-xs font-bold tracking-wider uppercase cursor-pointer"
+      className="btn-primary w-full h-12 box-border rounded-xl font-orbitron font-bold tracking-wider uppercase cursor-pointer flex items-center justify-center text-xs transition-all disabled:opacity-60"
     >
       {loading ? (
         <span className="flex items-center justify-center gap-2">
-          <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           <span>VERIFYING CREDENTIALS...</span>
         </span>
       ) : (

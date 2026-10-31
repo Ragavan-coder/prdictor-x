@@ -84,7 +84,7 @@ function App() {
     <div
       className="relative w-full h-full overflow-hidden"
       style={{
-        background: '#EAEAEA', // Exact studio background tone matching video & portal
+        background: '#ECEDEA',
       }}
     >
       <AnimatePresence mode="wait">

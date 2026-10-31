@@ -114,12 +114,12 @@ export default function SecurityAlertCenter({ isOpen, onClose, onAlertCountChang
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
-          className="bg-white rounded-2xl shadow-2xl border border-neutral-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]"
+          className="bg-white rounded-2xl shadow-2xl border-2 border-[#E4E7EC] w-full max-w-[640px] lg:max-w-[680px] overflow-hidden flex flex-col max-h-[85vh]"
         >
           {/* Header */}
-          <div className="p-4 border-b border-neutral-200 flex items-center justify-between bg-neutral-50/80">
+          <div className="px-6 py-4 border-b border-[#E4E7EC] flex items-center justify-between bg-neutral-50/80">
             <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#C8102E] animate-ping" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#8B1E2D] animate-ping" />
               <div>
                 <h3 className="font-orbitron font-bold text-sm tracking-wider uppercase text-neutral-900">
                   Automated Security Alerts & Webhook Dispatcher
@@ -131,19 +131,19 @@ export default function SecurityAlertCenter({ isOpen, onClose, onAlertCountChang
             </div>
             <button
               onClick={onClose}
-              className="text-neutral-400 hover:text-neutral-700 transition-colors p-1 cursor-pointer font-bold text-lg"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer font-bold text-lg"
             >
               ✕
             </button>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-neutral-200 bg-white">
+          <div className="flex border-b border-[#E4E7EC] bg-white">
             <button
               onClick={() => setTab('feed')}
-              className={`flex-1 py-2.5 font-orbitron text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
+              className={`flex-1 py-3 font-orbitron text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
                 tab === 'feed'
-                  ? 'border-[#C8102E] text-[#C8102E] bg-red-50/20'
+                  ? 'border-[#8B1E2D] text-[#8B1E2D] bg-[#8B1E2D]/5'
                   : 'border-transparent text-neutral-500 hover:text-neutral-900'
               }`}
             >
@@ -151,9 +151,9 @@ export default function SecurityAlertCenter({ isOpen, onClose, onAlertCountChang
             </button>
             <button
               onClick={() => setTab('settings')}
-              className={`flex-1 py-2.5 font-orbitron text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
+              className={`flex-1 py-3 font-orbitron text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
                 tab === 'settings'
-                  ? 'border-[#C8102E] text-[#C8102E] bg-red-50/20'
+                  ? 'border-[#8B1E2D] text-[#8B1E2D] bg-[#8B1E2D]/5'
                   : 'border-transparent text-neutral-500 hover:text-neutral-900'
               }`}
             >
@@ -162,7 +162,7 @@ export default function SecurityAlertCenter({ isOpen, onClose, onAlertCountChang
           </div>
 
           {/* Body Content */}
-          <div className="p-4 overflow-y-auto flex-1 font-rajdhani">
+          <div className="px-6 sm:px-8 py-5 overflow-y-auto flex-1 font-rajdhani">
             {statusMsg && (
               <div className="mb-3 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2">
                 <span>✓</span>
@@ -188,17 +188,17 @@ export default function SecurityAlertCenter({ isOpen, onClose, onAlertCountChang
                       type="button"
                       disabled={testSending}
                       onClick={() => handleSendTestAlert('HIGH')}
-                      className="px-2.5 py-1 rounded bg-neutral-900 hover:bg-neutral-800 text-white font-orbitron text-[0.62rem] tracking-wider uppercase font-bold cursor-pointer transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white font-orbitron text-[0.65rem] tracking-wider uppercase font-bold cursor-pointer transition-colors"
                     >
-                      {testSending ? 'Sending...' : '⚡ Test High Alert'}
+                      {testSending ? 'Sending...' : 'Test High Alert'}
                     </button>
                     <button
                       type="button"
                       disabled={testSending}
                       onClick={() => handleSendTestAlert('CRITICAL')}
-                      className="px-2.5 py-1 rounded bg-[#C8102E] hover:bg-[#A00D24] text-white font-orbitron text-[0.62rem] tracking-wider uppercase font-bold cursor-pointer transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-[#8B1E2D] hover:bg-[#6F1724] text-white font-orbitron text-[0.65rem] tracking-wider uppercase font-bold cursor-pointer transition-colors"
                     >
-                      {testSending ? 'Sending...' : '🚨 Test Critical Alert'}
+                      {testSending ? 'Sending...' : 'Test Critical Alert'}
                     </button>
                   </div>
                 </div>

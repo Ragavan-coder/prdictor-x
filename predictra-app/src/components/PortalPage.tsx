@@ -40,7 +40,7 @@ export default function PortalPage({ onEnter, onReplayVideo }: Props) {
       key="portal-page"
       className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden select-none"
       style={{
-        background: 'linear-gradient(180deg, #EAEAEA 0%, #E6E6E6 50%, #DFDFDF 100%)',
+        background: '#ECEDEA',
         zIndex: 70,
       }}
       initial={{ opacity: 0 }}
@@ -108,8 +108,8 @@ export default function PortalPage({ onEnter, onReplayVideo }: Props) {
       {/* ── TOP CONTROLS (Replay Video option) ── */}
       <div className="absolute top-6 inset-x-8 flex items-center justify-between z-20 pointer-events-auto">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#C8102E] animate-pulse" />
-          <span className="font-orbitron text-[0.65rem] tracking-[0.2em] uppercase text-neutral-500 font-semibold">
+          <div className="w-2 h-2 rounded-full bg-[#8B1E2D] animate-pulse" />
+          <span className="font-orbitron text-[0.65rem] tracking-[0.2em] uppercase text-[#667085] font-semibold">
             SENTRA CORE ONLINE
           </span>
         </div>
@@ -117,9 +117,9 @@ export default function PortalPage({ onEnter, onReplayVideo }: Props) {
         {onReplayVideo && (
           <motion.button
             onClick={onReplayVideo}
-            whileHover={{ scale: 1.05, borderColor: '#C8102E' }}
+            whileHover={{ scale: 1.05, borderColor: '#8B1E2D' }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white/80 backdrop-blur-md shadow-xs text-neutral-600 hover:text-[#C8102E] transition-all font-rajdhani text-xs font-semibold cursor-pointer"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#E4E7EC] bg-white/90 backdrop-blur-md shadow-xs text-[#20242C] hover:text-[#8B1E2D] hover:border-[#8B1E2D] transition-all font-rajdhani text-xs font-semibold cursor-pointer"
             title="Replay cinematic video"
           >
             <span>↺</span>
@@ -155,10 +155,10 @@ export default function PortalPage({ onEnter, onReplayVideo }: Props) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="font-rajdhani font-bold tracking-[0.22em] uppercase text-neutral-800 text-sm md:text-base mt-3"
+            className="font-rajdhani font-bold tracking-[0.22em] uppercase text-[#20242C] text-sm md:text-base mt-3.5"
             style={{ letterSpacing: '0.22em' }}
           >
-            SENTRA <span className="text-neutral-400 font-light mx-1">|</span> FOUR-LAYER VERIFICATION CORE
+            SENTRA <span className="text-[#667085] font-light mx-1">|</span> FOUR-LAYER VERIFICATION CORE
           </motion.div>
 
           {/* Tagline: TRUST EVERY VALUE. TRACK EVERY FDR. */}
@@ -166,65 +166,83 @@ export default function PortalPage({ onEnter, onReplayVideo }: Props) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.6 }}
-            className="font-rajdhani font-bold text-xs md:text-sm tracking-[0.16em] uppercase text-neutral-800 mt-5"
+            className="font-rajdhani font-bold text-xs md:text-sm tracking-[0.18em] uppercase text-[#20242C] mt-4"
           >
             TRUST EVERY VALUE. TRACK EVERY FDR.
           </motion.p>
 
-          {/* ── INTERACTIVE CALL-TO-ACTION BUTTON ── */}
+          {/* ── INTERACTIVE CALL-TO-ACTION BUTTON (PERFECT ENTERPRISE HERO BOX) ── */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
-            className="mt-3 relative"
+            className="mt-8 sm:mt-10 relative w-full flex flex-col items-center"
           >
             <motion.button
               id="enter-intelligence-system-btn"
               onClick={handleClick}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className={`
-                group relative inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full
-                font-rajdhani font-bold text-xs md:text-sm tracking-[0.18em] uppercase
-                cursor-pointer transition-all duration-300
+                group relative w-full max-w-[640px] lg:max-w-[680px]
+                flex flex-col items-center justify-center
+                px-8 sm:px-14 md:px-16 py-5 sm:py-5.5 rounded-2xl
+                border-2 cursor-pointer transition-all duration-300
                 ${
                   isClicked
-                    ? 'bg-[#C8102E] text-white shadow-lg'
-                    : 'bg-white/95 text-neutral-900 border border-neutral-300 hover:border-[#C8102E] hover:text-[#C8102E] shadow-sm hover:shadow-md'
+                    ? 'bg-[#8B1E2D] text-white border-[#8B1E2D] shadow-xl'
+                    : 'bg-white/95 text-[#20242C] border-[#E4E7EC] hover:border-[#8B1E2D]'
                 }
               `}
               style={{
                 boxShadow: isHovered
-                  ? '0 6px 20px rgba(200, 16, 46, 0.22), 0 2px 6px rgba(0, 0, 0, 0.08)'
-                  : '0 2px 8px rgba(0, 0, 0, 0.06)',
+                  ? '0 20px 48px -8px rgba(139, 30, 45, 0.22), 0 8px 20px -4px rgba(0, 0, 0, 0.08)'
+                  : '0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04)',
               }}
             >
-              {/* Subtle crimson pulse halo */}
+              {/* Subtle crimson focus halo */}
               <span
-                className="absolute inset-0 rounded-full border border-[#C8102E] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                className="absolute inset-0 rounded-2xl border-2 border-[#8B1E2D] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                 style={{
-                  animation: 'progress-glow 2s infinite ease-in-out',
+                  animation: 'progress-glow 2.5s infinite ease-in-out',
                 }}
               />
 
-              <span className="relative z-10">ENTER THE INTELLIGENCE SYSTEM</span>
-              <motion.span
-                className="relative z-10 text-[#C8102E] font-bold text-base"
-                animate={{ x: isHovered ? 4 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                →
-              </motion.span>
+              {/* Status Header inside the box */}
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className={`w-2 h-2 rounded-full ${isClicked ? 'bg-white' : 'bg-[#8B1E2D]'} animate-pulse`} />
+                <span className={`font-orbitron text-[0.66rem] sm:text-[0.68rem] tracking-[0.22em] uppercase font-semibold ${isClicked ? 'text-white/80' : 'text-[#667085]'}`}>
+                  SECURE INTELLIGENCE GATEWAY
+                </span>
+              </div>
+
+              {/* Main Headline CTA - spacious side clearance so words never touch edges */}
+              <div className="flex items-center justify-center gap-3 w-full px-2">
+                <span className={`font-rajdhani font-black text-base sm:text-lg md:text-xl tracking-[0.14em] uppercase transition-colors whitespace-nowrap ${
+                  isClicked ? 'text-white' : 'text-[#20242C] group-hover:text-[#8B1E2D]'
+                }`}>
+                  ENTER THE INTELLIGENCE SYSTEM
+                </span>
+                <motion.span
+                  className={`font-black text-lg sm:text-xl leading-none transition-colors ${
+                    isClicked ? 'text-white' : 'text-[#8B1E2D] group-hover:text-[#6F1724]'
+                  }`}
+                  animate={{ x: isHovered ? 5 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  →
+                </motion.span>
+              </div>
             </motion.button>
 
             {/* Subtle instructional hint */}
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0.4, 0.8, 0.4] }}
+              animate={{ opacity: [0.5, 0.9, 0.5] }}
               transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
-              className="font-rajdhani text-[0.68rem] tracking-widest text-neutral-500 uppercase mt-2.5"
+              className="font-inter text-xs sm:text-[13px] tracking-wider text-[#667085] mt-3.5 select-none"
             >
               Click above to proceed to authentication
             </motion.p>

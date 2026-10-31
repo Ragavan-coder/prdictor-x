@@ -109,6 +109,7 @@ export async function registerWithKeycloak(redirectUri?: string): Promise<void> 
  * Ends session at Keycloak and returns to PREDICTRA-X portal.
  */
 export async function logoutKeycloak(redirectUri?: string): Promise<void> {
+  localStorage.removeItem('predictra_access_token');
   const targetUri = redirectUri || window.location.origin;
   if (keycloak.authenticated) {
     await keycloak.logout({
@@ -121,13 +122,15 @@ export async function logoutKeycloak(redirectUri?: string): Promise<void> {
  * Returns current valid Access Token for FastAPI Bearer authorization
  */
 export async function getValidAccessToken(): Promise<string | null> {
-  if (!keycloak.authenticated) return null;
-  try {
-    await keycloak.updateToken(30);
-    return keycloak.token || null;
-  } catch {
-    return null;
+  if (keycloak.authenticated && keycloak.token) {
+    try {
+      await keycloak.updateToken(30);
+      return keycloak.token || null;
+    } catch {
+      // fallback to stored local token
+    }
   }
+  return localStorage.getItem('predictra_access_token') || null;
 }
 
 /**

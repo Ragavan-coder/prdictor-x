@@ -92,12 +92,12 @@ export default function CinematicIntro({ onComplete }: Props) {
       <div className="absolute top-6 right-6 z-50">
         <motion.button
           onClick={onComplete}
-          whileHover={{ scale: 1.05, borderColor: '#C8102E' }}
+          whileHover={{ scale: 1.05, borderColor: '#8B1E2D' }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-300 bg-white/90 backdrop-blur-md shadow-xs hover:border-[#C8102E] hover:text-[#C8102E] transition-all font-orbitron text-[0.68rem] font-semibold text-neutral-700 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-300 bg-white/90 backdrop-blur-md shadow-xs hover:border-[#8B1E2D] hover:text-[#8B1E2D] transition-all font-orbitron text-[0.68rem] font-semibold text-neutral-700 cursor-pointer"
         >
           <span>SKIP INTRO</span>
-          <span className="text-[#C8102E]">→</span>
+          <span className="text-[#8B1E2D]">→</span>
         </motion.button>
       </div>
 
@@ -114,8 +114,8 @@ export default function CinematicIntro({ onComplete }: Props) {
         </p>
       </motion.div>
 
-      {/* ── Main centred content ── */}
-      <div className="relative z-10 flex flex-col items-center gap-7 px-6" style={{ maxWidth: 560 }}>
+      {/* ── Main centred content (Standardized Box Dimensions) ── */}
+      <div className="relative z-10 flex flex-col items-center gap-7 w-full max-w-[640px] lg:max-w-[680px] px-8 sm:px-14 md:px-16 mx-auto">
 
         {/* SHIELD + RINGS */}
         <motion.div
@@ -164,7 +164,7 @@ export default function CinematicIntro({ onComplete }: Props) {
 
         {/* SENTRA label */}
         <motion.div
-          className="text-center -mt-3"
+          className="text-center mt-1.5"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: phase >= 1 ? 1 : 0, y: phase >= 1 ? 0 : 8 }}
           transition={{ delay: 0.5, duration: 0.7 }}

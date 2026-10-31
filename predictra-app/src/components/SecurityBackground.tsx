@@ -19,8 +19,8 @@ export default function SecurityBackground() {
       {/* Very subtle top-left radial blush */}
       <div className="absolute inset-0" style={{
         background: `
-          radial-gradient(ellipse 55% 45% at 15% 10%, rgba(200,16,46,0.04) 0%, transparent 60%),
-          radial-gradient(ellipse 45% 40% at 85% 85%, rgba(200,16,46,0.03) 0%, transparent 60%)
+          radial-gradient(ellipse 55% 45% at 15% 10%, rgba(139,30,45,0.04) 0%, transparent 60%),
+          radial-gradient(ellipse 45% 40% at 85% 85%, rgba(139,30,45,0.03) 0%, transparent 60%)
         `,
       }} />
 
@@ -34,7 +34,7 @@ export default function SecurityBackground() {
           left: '50%', top: '50%',
           width: r.size, height: r.size,
           transform: 'translate(-50%, -50%)',
-          border: `1px ${i === 1 ? 'dashed' : 'solid'} rgba(200,16,46,${r.opacity})`,
+          border: `1px ${i === 1 ? 'dashed' : 'solid'} rgba(139,30,45,${r.opacity})`,
           animation: `ring-rotate-${r.dir} ${r.dur} linear infinite`,
         }} />
       ))}
@@ -46,7 +46,7 @@ export default function SecurityBackground() {
           top: `${d.y}%`,
           width: `${d.size}px`,
           height: `${d.size}px`,
-          background: d.id % 3 === 0 ? '#C8102E' : '#CCCCCC',
+          background: d.id % 3 === 0 ? '#8B1E2D' : '#CCCCCC',
           opacity: 0,
           animation: `particle-twinkle ${d.dur}s ${d.delay}s ease-in-out infinite`,
         }} />
@@ -61,7 +61,7 @@ export default function SecurityBackground() {
       ].map((c, i) => (
         <div key={i} className="absolute" style={{ top: c.top, bottom: c.bottom, left: c.left, right: c.right }}>
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ opacity: 0.18 }}>
-            <path d={c.d} stroke="#C8102E" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path d={c.d} stroke="#8B1E2D" strokeWidth="2" fill="none" strokeLinecap="round" />
           </svg>
         </div>
       ))}

@@ -33,6 +33,13 @@ predictra-app/.env
 .env.local
 .env.*.local
 
+# Local Databases and Storage
+*.db
+*.sqlite
+*.sqlite3
+storage/
+*.exe
+
 # IDE and OS files
 .vscode/
 .idea/

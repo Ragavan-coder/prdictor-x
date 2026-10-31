@@ -12,16 +12,16 @@ export default function MuteButton({ muted, onToggle }: Props) {
       className="fixed top-4 right-4 z-50 flex items-center gap-2 px-3 py-2 rounded-lg"
       style={{
         background: 'rgba(255,255,255,0.92)',
-        border: '1px solid rgba(200,16,46,0.25)',
+        border: '1px solid rgba(139,30,45,0.25)',
         backdropFilter: 'blur(8px)',
-        color: '#444444',
+        color: '#20242C',
         fontSize: '0.68rem',
         fontFamily: 'Orbitron, monospace',
         letterSpacing: '0.1em',
         cursor: 'pointer',
         boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
       }}
-      whileHover={{ scale: 1.05, borderColor: '#C8102E', color: '#C8102E' }}
+      whileHover={{ scale: 1.05, borderColor: '#8B1E2D', color: '#8B1E2D' }}
       whileTap={{ scale: 0.95 }}
       aria-label={muted ? 'Unmute audio' : 'Mute audio'}
     >
